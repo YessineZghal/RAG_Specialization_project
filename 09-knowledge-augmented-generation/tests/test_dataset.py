@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from kag_common.dataset import _join_contexts  # noqa: E402
+from kag_common.dataset import _join_contexts
 
 
 def test_join_contexts_prefixes_each_segment_with_its_real_label():

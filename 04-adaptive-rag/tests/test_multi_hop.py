@@ -4,8 +4,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "multi-hop-rag"))
-from planner import plan_subquestions  # noqa: E402
-from subquestion_retrieval import multi_hop_retrieve  # noqa: E402
+from planner import plan_subquestions
+from subquestion_retrieval import multi_hop_retrieve
 
 
 def test_plan_subquestions_splits_two_lines(fake_llm):

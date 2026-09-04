@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from schema.domain_schema import SchemaValidator  # noqa: E402
+from schema.domain_schema import SchemaValidator
 
 
 def test_validate_entity_accepts_a_type_in_the_closed_schema():

@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tree-of-thought"))
-from tree_search import tree_of_thought_search  # noqa: E402
+from tree_search import tree_of_thought_search
 
 
 def test_full_search_prunes_to_the_best_branch_at_each_depth(fake_llm):

@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from caching.response_cache import ResponseCache  # noqa: E402
+from caching.response_cache import ResponseCache
 
 
 def test_miss_on_empty_cache(fake_redis):

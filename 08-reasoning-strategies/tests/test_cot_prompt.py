@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "chain-of-thought"))
-from cot_prompt import cot_answer  # noqa: E402
+from cot_prompt import cot_answer
 
 
 def test_cot_answer_parses_a_clean_yes(fake_llm):

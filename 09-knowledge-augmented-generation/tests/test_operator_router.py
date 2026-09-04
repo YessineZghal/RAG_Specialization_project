@@ -16,11 +16,11 @@ import networkx as nx
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "reasoning-engine"))
-from logical_form_parser import LogicalForm  # noqa: E402
-from operator_router import answer_question  # noqa: E402
+from logical_form_parser import LogicalForm
+from operator_router import answer_question
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from indexing.mutual_index import MutualIndex  # noqa: E402
+from indexing.mutual_index import MutualIndex
 
 
 def _build_graph_and_index():

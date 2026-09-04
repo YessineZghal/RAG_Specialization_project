@@ -12,8 +12,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from agentic_common.db import get_connection, schema_description  # noqa: E402
-from agentic_common.llm import OllamaLLM  # noqa: E402
+from agentic_common.db import get_connection, schema_description
+from agentic_common.llm import OllamaLLM
 
 FORBIDDEN_KEYWORDS = ("DROP", "DELETE", "UPDATE", "INSERT", "ALTER", "ATTACH", "PRAGMA", "CREATE")
 MAX_ROWS = 50

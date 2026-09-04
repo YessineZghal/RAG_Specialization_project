@@ -8,8 +8,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "multimodal-rag"))
-from image_retrieval import extract_captions  # noqa: E402
-from table_retrieval import extract_tables  # noqa: E402
+from image_retrieval import extract_captions
+from table_retrieval import extract_tables
 
 SAMPLE_PAGES = [
     "Some intro text with no captions on this page.",

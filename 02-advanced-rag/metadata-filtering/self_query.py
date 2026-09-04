@@ -41,10 +41,10 @@ from typing import Literal
 from pydantic import BaseModel, ValidationError
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from common.llm import OllamaLLM  # noqa: E402
+from common.llm import OllamaLLM
 
-from filters import filter_by_metadata  # noqa: E402
-from temporal import DateRange, filter_by_date_range  # noqa: E402
+from filters import filter_by_metadata
+from temporal import DateRange, filter_by_date_range
 
 
 class SelfQueryFilters(BaseModel):

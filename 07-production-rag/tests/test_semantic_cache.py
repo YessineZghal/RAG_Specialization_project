@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from caching.semantic_cache import SemanticCache  # noqa: E402
+from caching.semantic_cache import SemanticCache
 
 _VECTORS = {
     "capital of france": [1.0, 0.0, 0.0],

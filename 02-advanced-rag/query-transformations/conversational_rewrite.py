@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from common.llm import OllamaLLM  # noqa: E402
+from common.llm import OllamaLLM
 
 CONVERSATIONAL_REWRITE_PROMPT = (
     "The following is a conversation between a user and an assistant, "

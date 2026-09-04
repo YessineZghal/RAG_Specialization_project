@@ -37,7 +37,7 @@ from .config import settings
 REPO_ROOT = settings.level_dir.parent
 sys.path.insert(0, str(REPO_ROOT))  # so `shared.utils.text` is importable
 
-from shared.utils.text import jaccard_similarity  # noqa: E402
+from shared.utils.text import jaccard_similarity
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)

@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "routing"))
-from rule_router import rule_route  # noqa: E402
+from rule_router import rule_route
 
 
 @pytest.mark.parametrize(

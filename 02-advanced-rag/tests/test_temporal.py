@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "metadata-filtering"))
-from temporal import DateRange, build_temporal_metadata, filter_by_date_range, temporal_search  # noqa: E402
+from temporal import DateRange, build_temporal_metadata, filter_by_date_range, temporal_search
 
 
 def test_build_temporal_metadata_is_deterministic_for_a_fixed_seed():

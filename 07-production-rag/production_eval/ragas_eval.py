@@ -25,8 +25,8 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from production_common.embed import OllamaEmbedder  # noqa: E402
-from production_common.llm import OllamaLLM  # noqa: E402
+from production_common.embed import OllamaEmbedder
+from production_common.llm import OllamaLLM
 
 CLAIMS_PROMPT = """Break the following answer into a list of individual factual claims.
 

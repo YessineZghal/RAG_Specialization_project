@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from security.prompt_injection import (  # noqa: E402
+from security.prompt_injection import (
     detect_pattern_injection,
     is_suspicious,
 )

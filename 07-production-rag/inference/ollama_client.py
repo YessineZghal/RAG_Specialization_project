@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from production_common.llm import OllamaLLM  # noqa: E402
+from production_common.llm import OllamaLLM
 
 
 class OllamaBackend:

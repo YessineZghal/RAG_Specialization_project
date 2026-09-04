@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "context-compression"))
-from compressor import compress_context  # noqa: E402
+from compressor import compress_context
 
 
 def test_compress_context_keeps_query_relevant_sentences(fake_embed_fn):

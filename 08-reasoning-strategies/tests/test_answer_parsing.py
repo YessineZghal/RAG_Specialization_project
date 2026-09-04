@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from reasoning_common.answer_parsing import parse_yes_no  # noqa: E402
+from reasoning_common.answer_parsing import parse_yes_no
 
 
 def test_parse_yes_no_reads_a_clean_final_line():

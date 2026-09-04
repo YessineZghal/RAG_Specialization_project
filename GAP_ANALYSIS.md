@@ -6,8 +6,9 @@
 > gaps found are significant enough to get their own new level docs:
 > **[Level 8 — Reasoning Strategies](./08-reasoning-strategies/README.md)** (Chain-/Tree-/Graph-of-Thought)
 > and **[Level 9 — Knowledge-Augmented Generation](./09-knowledge-augmented-generation/README.md)**
-> (KAG). Both are **structure-only, like every level was before it got built** — this document is
-> the "why," those two are the "what."
+> (KAG). Both **started structure-only, like every level did before it got built, and are now
+> fully implemented and executed** — see each one's own Evaluation section for its real, measured
+> result. This document is the "why," those two are (now) the "what happened."
 >
 > A follow-up request asked to check a much longer, explicitly-named list of ~45 "RAG types"
 > against this repo directly — see **[`RAG_TAXONOMY_COVERAGE.md`](./RAG_TAXONOMY_COVERAGE.md)**
@@ -68,18 +69,27 @@ would make it dramatically worse — a real trade-off Level 8 should measure, no
 | **Microsoft GraphRAG** | Extracts entities/relations, runs **community detection** (Leiden algorithm) over the graph, then generates natural-language summaries per community for hierarchical, **global sensemaking** queries ("what are the main themes in this corpus?") — a different problem than the point-lookup questions this repo's graph-rag answers. | Complementary, not redundant: this repo's graph-rag and KAG both answer specific-fact questions; Microsoft GraphRAG answers corpus-wide summarization questions neither currently attempts. |
 | **LightRAG** | A lighter-weight alternative to Microsoft GraphRAG: **dual-level retrieval** (low-level specific-entity keys + high-level topic keys) without the community-summarization layer — cheaper and faster, closer in spirit to this repo's existing graph-rag but more structured. | The natural "cheaper middle ground" to mention alongside KAG in Level 9, for cost-conscious readers. |
 
-### C. Retrieval-quality techniques — corrected after a follow-up taxonomy review
+### C. Retrieval-quality techniques — corrected after a follow-up taxonomy review, then built
 
-> **Correction:** this section originally listed HyDE as uncovered. That was wrong — Level 2
-> already implements it for real (`02-advanced-rag/query-transformations/hyde.py`), executed in
-> `notebooks/05_query_transformations.ipynb` with a documented real finding ("HyDE solves a query
-> everything else misses"). Level 2 also already covers parent-child/small-to-big chunking,
-> multi-query, query rewriting, step-back prompting, metadata filtering, and context compression
-> — a fuller, evidence-checked cross-reference against a much longer list of named RAG "types" is
-> in **[`RAG_TAXONOMY_COVERAGE.md`](./RAG_TAXONOMY_COVERAGE.md)**. This section here now only
-> lists what that later, more careful pass confirmed is genuinely still absent — the lesson being
-> the same one this repo's own READMEs keep landing on: check the actual code before claiming a
-> gap, don't reason from memory of what a repo "probably" has.
+> **Correction (original):** this section originally listed HyDE as uncovered. That was wrong —
+> Level 2 already implements it for real (`02-advanced-rag/query-transformations/hyde.py`),
+> executed in `notebooks/05_query_transformations.ipynb` with a documented real finding ("HyDE
+> solves a query everything else misses"). Level 2 also already covers parent-child/small-to-big
+> chunking, multi-query, query rewriting, step-back prompting, metadata filtering, and context
+> compression — a fuller, evidence-checked cross-reference against a much longer list of named RAG
+> "types" is in **[`RAG_TAXONOMY_COVERAGE.md`](./RAG_TAXONOMY_COVERAGE.md)**.
+>
+> **Update (since built):** the three techniques below — genuinely absent when this document was
+> first written, verified by directly grepping the repo, not assumed — have since been implemented
+> as part of Level 2's "eight additions from the taxonomy review" pass:
+> `chunking/raptor.py`, `retrieval/late_interaction.py`, `chunking/contextual_enrichment.py`, all
+> real, tested (17 passing tests across the three), and run against real data with documented
+> findings in [Level 2's own README](./02-advanced-rag/README.md#eight-additions-from-the-taxonomy-review)
+> — including a genuine limitation RAPTOR's clustering hit on a same-domain sample. This section is
+> kept below as a historical record of what the gap analysis originally found, not as a current
+> "still missing" list — check `02-advanced-rag/README.md`'s own Checklist for current status, the
+> same lesson this repo's READMEs keep landing on: check the actual code, don't reason from memory
+> of what a repo "probably" has.
 
 | Technique | What it is | Real measured effect (from research) |
 |---|---|---|
@@ -87,10 +97,8 @@ would make it dramatically worse — a real trade-off Level 8 should measure, no
 | **ColBERT / late interaction** | Token-level embeddings compared via "late interaction" (MaxSim) instead of one dense vector per chunk — finer-grained matching than this repo's single-vector dense retrieval (Levels 1-7 all use one embedding per chunk). | Consistently outperforms both BM25 and single-vector dense retrieval in head-to-head benchmarks. |
 | **Contextual Retrieval** (Anthropic) | Prepend an LLM-generated one- or two-sentence summary of *where a chunk sits in its source document* before embedding/indexing it — fixes the "chunk lost its surrounding context" problem this repo's flat chunking (every level) never addresses. Distinct from Level 2's `context-compression/`, which trims context at *generation* time, not indexing time. | Reported 67% reduction in retrieval failure rate when combined with reranking. |
 
-Verified absent by directly grepping the whole repo for each technique (not just reasoning from
-what a level's README claims) — see `RAG_TAXONOMY_COVERAGE.md` for the methodology and the much
-longer list of RAG "types" it checks. All three are real, cheap-to-prototype additions to
-**Level 2** specifically — no new infrastructure needed beyond what it already has.
+All three were real, cheap-to-prototype additions to **Level 2** specifically — no new
+infrastructure needed beyond what it already had — and that is exactly what happened.
 
 ### D. A technique that directly targets Level 7's own measured bottleneck
 

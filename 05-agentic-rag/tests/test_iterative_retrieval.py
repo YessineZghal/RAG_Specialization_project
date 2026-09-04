@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "iterative-retrieval"))
-from loop import is_evidence_sufficient, iterative_retrieve  # noqa: E402
+from loop import is_evidence_sufficient, iterative_retrieve
 
 
 def test_is_evidence_sufficient_false_for_empty_evidence(fake_llm):

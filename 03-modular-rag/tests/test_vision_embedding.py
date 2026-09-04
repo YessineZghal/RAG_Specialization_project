@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "multimodal-rag"))
-from vision_embedding import (  # noqa: E402
+from vision_embedding import (
     build_enriched_index_text,
     build_vision_retriever,
     describe_images,

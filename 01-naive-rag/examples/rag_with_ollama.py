@@ -23,10 +23,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.embed import SentenceTransformerEmbedder  # noqa: E402
-from src.generate import OllamaGenerator  # noqa: E402
-from src.ingest import load_from_hf_dataset  # noqa: E402
-from src.pipeline import RAGPipeline  # noqa: E402
+from src.embed import SentenceTransformerEmbedder
+from src.generate import OllamaGenerator
+from src.ingest import load_from_hf_dataset
+from src.pipeline import RAGPipeline
 
 
 def main() -> None:

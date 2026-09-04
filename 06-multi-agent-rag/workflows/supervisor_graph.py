@@ -9,11 +9,11 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from multiagent_common.agent_result import AgentResult  # noqa: E402
+from multiagent_common.agent_result import AgentResult
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from parallel import run_parallel  # noqa: E402
-from sequential import run_sequential  # noqa: E402
+from parallel import run_parallel
+from sequential import run_sequential
 
 
 def run_supervisor_graph(

@@ -15,7 +15,7 @@ from pathlib import Path
 from rank_bm25 import BM25Okapi
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))  # repo root
-from shared.utils.text import tokenize  # noqa: E402
+from shared.utils.text import tokenize
 
 
 class BM25Retriever:

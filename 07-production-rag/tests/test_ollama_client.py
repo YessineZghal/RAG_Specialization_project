@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from inference.ollama_client import OllamaBackend  # noqa: E402
+from inference.ollama_client import OllamaBackend
 
 
 def test_ollama_backend_has_expected_name():

@@ -9,8 +9,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from modular_common.llm import OllamaLLM  # noqa: E402
-from routing.rule_router import ROUTES  # noqa: E402
+from modular_common.llm import OllamaLLM
+from routing.rule_router import ROUTES
 
 ROUTER_PROMPT = """You are a query router for a system with five backends:
 

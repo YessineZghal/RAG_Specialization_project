@@ -131,9 +131,13 @@ flowchart TD
     TOT --> T1["thought_generator.py · state_evaluator.py · tree_search.py"]
     GOT --> G1["thought_graph.py · graph_search.py · hgot_retrieval.py"]
     EV --> EV1["metrics.py · cost_tracker.py"]
-    EX --> EX1["reasoning_pipeline.py"]
+    EX --> EX1["reasoning_pipeline.py · strategy_selector.py"]
     NB --> N1["4 notebooks, all executed"]
 ```
+
+`reasoning_common/strategy_classifier.py` holds the mini project's classification logic
+(`classify_strategy`); `examples/strategy_selector.py` is its CLI wiring — see
+[Mini Project](#mini-project) below.
 
 > **Package name note:** shared helpers live in `reasoning_common/`, not `common/` — following the
 > naming lesson learned the hard way in [Level 3](../03-modular-rag/README.md#folder-structure).
@@ -173,6 +177,59 @@ First run downloads StrategyQA and embeds the 282-sentence pooled fact corpus (~
 ```bash
 uv run --with jupyter jupyter lab notebooks/
 ```
+
+---
+
+## Mini Project
+
+`examples/strategy_selector.py` — the end-to-end example this level's build order called for: "an
+end-to-end example choosing a strategy per question type," instead of the caller picking one up
+front the way `reasoning_pipeline.py` requires via `--strategy`.
+
+```bash
+cd 08-reasoning-strategies
+uv run python examples/strategy_selector.py "Would a python starve on a diet of one mouse a week?"
+uv run python examples/strategy_selector.py "Is a pizza box compostable?"
+```
+
+`reasoning_common/strategy_classifier.py` classifies the question into one of four categories,
+mapped one-to-one onto this level's four strategies:
+
+| Category | Strategy | What it means |
+|---|---|---|
+| simple | CoT | One fact settles it, no branching needed |
+| comparative | ToT | Weigh competing hypotheses before committing |
+| combinatorial | GoT | Combine independent facts into one conclusion |
+| multi_hop | HGoT | Splits into distinct sub-questions, answered separately, then combined |
+
+Real, verified output — the selector genuinely dispatches differently per question, not a fixed
+choice:
+
+```
+$ uv run python examples/strategy_selector.py "Would a python starve on a diet of one mouse a week?"
+Selected strategy: tot
+Answer:   False
+LLM calls: 6 (including the classification call)
+
+$ uv run python examples/strategy_selector.py "Is a pizza box compostable?"
+Selected strategy: got
+Answer:   False
+LLM calls: 8 (including the classification call)
+```
+
+This is one more real classification decision with its own error rate — same failure class as
+Level 4's query classifier and Level 3's backend router — and it fails open to `cot` on an
+unparseable or ambiguous response, a deliberately safe default: this level's own real evaluation
+(see [Evaluation](#evaluation--what-actually-happened) above) found CoT the strongest, cheapest
+strategy on real StrategyQA questions, so a classifier failure defaulting to it costs nothing
+relative to guessing among the more expensive strategies. This selector is not expected to *beat*
+always-CoT on accuracy — its point is demonstrating a real, tested per-question-type dispatch
+mechanism, not a claim that dynamic selection outperforms the simplest strategy on this dataset.
+
+13 offline tests cover the classifier (`test_strategy_classifier.py`, 8 tests) and the dispatch
+logic (`test_strategy_selector.py`, 5 tests, monkeypatching the four strategy functions so only
+the new wiring is under test — the strategies themselves are already covered by their own test
+files).
 
 ---
 
@@ -272,19 +329,35 @@ the bottleneck Level 7 already measured, for a strategy that did not even win on
 uv run pytest 08-reasoning-strategies/tests -v   # or `uv run pytest -q` from the repo root for all 8 levels
 ```
 
-59 tests, entirely offline (fake LLM/embedder/retriever fixtures via `tests/conftest.py`, no
+72 tests, entirely offline (fake LLM/embedder/retriever fixtures via `tests/conftest.py`, no
 network or Ollama required) — including a full scripted trace of Tree-of-Thought's exact call
 sequence (generate → evaluate → evaluate → generate → evaluate → evaluate → final-answer) proving
-the beam search actually prunes to the best-scoring branch, and a structural test proving
+the beam search actually prunes to the best-scoring branch, a structural test proving
 Graph-of-Thoughts' aggregation produces a real multi-parent node in the graph, not just a
-plausible-looking LLM-call count. Full repository suite: **387 tests passing** across all 8 levels
-together (328 before this level was built).
+plausible-looking LLM-call count, and the mini project's classifier/dispatch tests (13 of the 72).
+Full repository suite: **474 tests passing** across the whole repo (387 before this level's mini
+project and Level 9 were built).
 
 ---
 
 ## What I Learned
 
-*(fill in after working through this level yourself)*
+- **More reasoning machinery is not a free upgrade.** The headline finding (CoT beating ToT, GoT,
+  and HGoT on real StrategyQA questions, at a fraction of the LLM-call cost) only became
+  believable once traced to a specific, reproducible mechanism (the Mount Fuji unit-conversion
+  trace) rather than dismissed as sample noise — the discipline of finding the *why*, not just the
+  *what*, is what made the result trustworthy enough to report as a real finding instead of an
+  anomaly.
+- **A classifier's fallback choice is a design decision, not an afterthought.** Building the mini
+  project's `classify_strategy` after already knowing CoT wins on this dataset made the fail-open
+  default obvious (`cot`, not an arbitrary pick) — a lesson worth carrying backward: Level 9's
+  `logical_form_parser` falls open to `{retrieval, language_reasoning}` for the same reason, chosen
+  *before* that level's own evaluation confirmed it was the safer failure mode.
+- **A routing/classification mechanism can be correctly built and still not help.** The mini
+  project's dispatcher genuinely picks a different strategy per question (verified: `tot` for one
+  real question, `got` for another) — but given this level's own measured result, it isn't expected
+  to beat a fixed, always-CoT baseline on accuracy. Building the real mechanism and reporting that
+  honestly is more valuable here than tuning the classifier until it looks like it "wins."
 
 ---
 
@@ -296,9 +369,9 @@ together (328 before this level was built).
 - [x] Implement the cost tracker (LLM-call count per strategy, not just accuracy)
 - [x] Work through and execute all 4 notebooks
 - [x] Run real evaluation against real StrategyQA ground truth, including the cost comparison
-- [x] Offline test suite (59 tests, 387 across the full repo)
-- [ ] Build the mini project (a reasoning-strategy selector that picks CoT/ToT/GoT per question, and can justify why)
-- [ ] Update **What I Learned** above
+- [x] Offline test suite (72 tests for this level, 474 across the full repo)
+- [x] Build the mini project (`examples/strategy_selector.py` — picks CoT/ToT/GoT/HGoT per question, and reports why)
+- [x] Update **What I Learned** above
 - [ ] Commit results
 
 ---

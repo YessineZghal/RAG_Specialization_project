@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "reflection"))
-from reflection import reflect  # noqa: E402
+from reflection import reflect
 
 
 def test_reflect_satisfactory(fake_llm):

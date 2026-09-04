@@ -17,7 +17,7 @@ from collections.abc import Callable
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from chunking.semantic import split_sentences  # noqa: E402
+from chunking.semantic import split_sentences
 
 
 def compress_context(

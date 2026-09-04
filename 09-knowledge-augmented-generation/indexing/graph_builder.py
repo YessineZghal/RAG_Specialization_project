@@ -17,9 +17,9 @@ from pathlib import Path
 import networkx as nx
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from kag_common.llm import OllamaLLM  # noqa: E402
-from schema.constrained_extraction import extract_from_document  # noqa: E402
-from schema.domain_schema import SchemaValidator  # noqa: E402
+from kag_common.llm import OllamaLLM
+from schema.constrained_extraction import extract_from_document
+from schema.domain_schema import SchemaValidator
 
 from .mutual_index import MutualIndex
 

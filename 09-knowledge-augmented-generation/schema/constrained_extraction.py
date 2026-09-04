@@ -22,7 +22,7 @@ from pathlib import Path
 from pydantic import BaseModel, ValidationError
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from kag_common.llm import OllamaLLM  # noqa: E402
+from kag_common.llm import OllamaLLM
 
 from .domain_schema import Entity, Relation, SchemaValidator
 

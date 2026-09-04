@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from kag_eval.simple_graphrag_baseline import (  # noqa: E402
+from kag_eval.simple_graphrag_baseline import (
     baseline_answer,
     build_unconstrained_graph,
     extract_unconstrained,

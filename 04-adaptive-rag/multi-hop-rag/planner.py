@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from adaptive_common.llm import OllamaLLM  # noqa: E402
+from adaptive_common.llm import OllamaLLM
 
 PLANNER_PROMPT = """This question requires finding one fact, then using it to find another.
 Break it into exactly 2 sequential sub-questions: the first finds the missing intermediate

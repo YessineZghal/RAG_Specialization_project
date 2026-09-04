@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "graph-of-thought"))
-from hgot_retrieval import answer_subquestion, decompose_question, hgot_answer  # noqa: E402
+from hgot_retrieval import answer_subquestion, decompose_question, hgot_answer
 
 
 def test_decompose_question_splits_lines_and_strips_numbering(fake_llm):

@@ -184,6 +184,8 @@ Each level finishes with one practical mini project.
 | 5 | Autonomous research agent |
 | 6 | Multi-agent company research platform |
 | 7 | Self-hosted production RAG service |
+| 8 *(extension)* | Reasoning-strategy selector — picks CoT/ToT/GoT/HGoT per question type |
+| 9 *(extension)* | KAG pipeline answering questions needing both graph traversal and numerical comparison |
 
 ---
 

@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from reasoning_eval.metrics import accuracy, compare_strategies  # noqa: E402
+from reasoning_eval.metrics import accuracy, compare_strategies
 
 QUESTIONS = {
     "q1": {"answer": True},

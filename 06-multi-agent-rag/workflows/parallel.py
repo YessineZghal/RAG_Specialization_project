@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from multiagent_common.agent_result import AgentResult  # noqa: E402
+from multiagent_common.agent_result import AgentResult
 
 
 async def _run_one(name: str, agent, task: str) -> tuple[str, AgentResult]:

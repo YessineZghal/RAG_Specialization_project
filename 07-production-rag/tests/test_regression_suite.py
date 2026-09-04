@@ -6,8 +6,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import production_eval.regression_suite as regression_suite  # noqa: E402
-from production_eval.regression_suite import check_regression  # noqa: E402
+import production_eval.regression_suite as regression_suite
+from production_eval.regression_suite import check_regression
 
 
 def test_no_baseline_reports_no_baseline_status(monkeypatch):

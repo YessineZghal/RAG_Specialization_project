@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "planning"))
-from agent_planner import make_plan  # noqa: E402
+from agent_planner import make_plan
 
 
 def test_make_plan_splits_lines(fake_llm):

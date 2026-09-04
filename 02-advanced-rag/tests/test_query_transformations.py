@@ -4,10 +4,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "query-transformations"))
-from hyde import generate_hypothetical_document, hyde_search  # noqa: E402
-from multi_query import generate_queries, multi_query_search  # noqa: E402
-from query_rewrite import rewrite_query  # noqa: E402
-from step_back import step_back_query, step_back_search  # noqa: E402
+from hyde import generate_hypothetical_document, hyde_search
+from multi_query import generate_queries, multi_query_search
+from query_rewrite import rewrite_query
+from step_back import step_back_query, step_back_search
 
 
 class FakeRetriever:

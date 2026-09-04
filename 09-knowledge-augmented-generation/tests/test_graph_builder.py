@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from indexing.graph_builder import build_graph, load_graph, neighbors_by_relation, nodes_by_type, save_graph  # noqa: E402
+from indexing.graph_builder import build_graph, load_graph, neighbors_by_relation, nodes_by_type, save_graph
 
 
 def _doc_response(entities, relations):

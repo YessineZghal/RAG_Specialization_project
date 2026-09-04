@@ -6,10 +6,10 @@ from pathlib import Path
 import networkx as nx
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "reasoning-engine"))
-from kg_reasoning_op import find_matching_nodes, reason_over_graph  # noqa: E402
+from kg_reasoning_op import find_matching_nodes, reason_over_graph
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from indexing.mutual_index import MutualIndex  # noqa: E402
+from indexing.mutual_index import MutualIndex
 
 
 def _build_graph():

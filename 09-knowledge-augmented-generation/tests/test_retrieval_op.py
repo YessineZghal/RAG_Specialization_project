@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "reasoning-engine"))
-from retrieval_op import retrieve  # noqa: E402
+from retrieval_op import retrieve
 
 
 def test_retrieve_returns_the_closest_documents_by_cosine_similarity(fake_embedder):

@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "graph-of-thought"))
-from graph_search import aggregate_thoughts, graph_of_thought_search  # noqa: E402
+from graph_search import aggregate_thoughts, graph_of_thought_search
 
 
 def test_aggregate_thoughts_sends_both_branches_and_returns_the_llms_synthesis(fake_llm):

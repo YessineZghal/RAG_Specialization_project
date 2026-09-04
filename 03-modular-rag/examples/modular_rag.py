@@ -21,16 +21,16 @@ LEVEL_DIR = Path(__file__).resolve().parent.parent
 for sub in ["", "routing", "multi-retriever", "sql-rag", "graph-rag", "web-rag", "api-rag"]:
     sys.path.insert(0, str(LEVEL_DIR / sub) if sub else str(LEVEL_DIR))
 
-from modular_common.llm import OllamaLLM  # noqa: E402
-from modular_common.pdf import load_chunks  # noqa: E402
-from rule_router import rule_route  # noqa: E402
-from vector_retriever import VectorRetriever  # noqa: E402
-from text_to_sql import answer_from_sql  # noqa: E402
-from entity_extraction import extract_triples  # noqa: E402
-from graph_builder import build_graph  # noqa: E402
-from graph_retrieval import graph_search  # noqa: E402
-from page_extraction import search_and_extract  # noqa: E402
-from tool_api import search_arxiv  # noqa: E402
+from modular_common.llm import OllamaLLM
+from modular_common.pdf import load_chunks
+from rule_router import rule_route
+from vector_retriever import VectorRetriever
+from text_to_sql import answer_from_sql
+from entity_extraction import extract_triples
+from graph_builder import build_graph
+from graph_retrieval import graph_search
+from page_extraction import search_and_extract
+from tool_api import search_arxiv
 
 
 def answer_documents(question: str, llm: OllamaLLM) -> str:

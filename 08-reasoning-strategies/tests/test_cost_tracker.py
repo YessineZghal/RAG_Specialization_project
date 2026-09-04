@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from reasoning_eval.cost_tracker import CostTrackingLLM  # noqa: E402
+from reasoning_eval.cost_tracker import CostTrackingLLM
 
 
 def test_cost_tracking_llm_counts_calls(fake_llm):

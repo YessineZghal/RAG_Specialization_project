@@ -27,9 +27,9 @@ import networkx as nx
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from kag_common.answer_parsing import parse_yes_no_maybe  # noqa: E402
-from kag_common.embed import OllamaEmbedder, cosine_search  # noqa: E402
-from kag_common.llm import OllamaLLM  # noqa: E402
+from kag_common.answer_parsing import parse_yes_no_maybe
+from kag_common.embed import OllamaEmbedder, cosine_search
+from kag_common.llm import OllamaLLM
 
 logger = logging.getLogger(__name__)
 

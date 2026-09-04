@@ -14,17 +14,17 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from agentic_common.config import settings  # noqa: E402
-from agentic_common.llm import OllamaLLM  # noqa: E402
+from agentic_common.config import settings
+from agentic_common.llm import OllamaLLM
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "planning"))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "iterative-retrieval"))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "verification"))
-from agent_planner import make_plan  # noqa: E402
-from loop import is_evidence_sufficient  # noqa: E402
-from source_checker import check_sources  # noqa: E402
+from agent_planner import make_plan
+from loop import is_evidence_sufficient
+from source_checker import check_sources
 
-from .state import AgentState, ToolCall  # noqa: E402
+from .state import AgentState, ToolCall
 
 TOOL_DESCRIPTIONS = """- vector_search(query): search the local document corpus for relevant passages
 - get_document(title): fetch the full text of a specific article by its exact title

@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "self-rag"))
-from self_rag import critique_answer, self_rag_answer  # noqa: E402
+from self_rag import critique_answer, self_rag_answer
 
 
 def test_critique_answer_true_when_grounded(fake_llm):

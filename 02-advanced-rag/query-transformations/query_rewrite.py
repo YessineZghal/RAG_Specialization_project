@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from common.llm import OllamaLLM  # noqa: E402
+from common.llm import OllamaLLM
 
 REWRITE_PROMPT = (
     "Rewrite the following search query to be clearer and more specific for a "

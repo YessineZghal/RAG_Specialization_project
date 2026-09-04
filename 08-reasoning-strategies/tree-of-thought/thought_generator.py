@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from reasoning_common.llm import OllamaLLM  # noqa: E402
+from reasoning_common.llm import OllamaLLM
 
 GENERATE_PROMPT = (
     "You are reasoning step by step to answer a yes/no question using "

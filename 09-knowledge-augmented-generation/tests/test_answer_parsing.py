@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from kag_common.answer_parsing import parse_yes_no_maybe  # noqa: E402
+from kag_common.answer_parsing import parse_yes_no_maybe
 
 
 def test_parses_a_clear_yes():

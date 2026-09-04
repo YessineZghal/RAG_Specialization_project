@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from modular_common.db import get_connection, schema_description  # noqa: E402
+from modular_common.db import get_connection, schema_description
 
 CORE_TABLES = ["Artist", "Album", "Track", "Customer", "Invoice", "InvoiceLine", "Genre"]
 

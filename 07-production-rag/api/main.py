@@ -18,17 +18,17 @@ LEVEL_DIR = Path(__file__).resolve().parent.parent
 for sub in ["", "retrieval-infrastructure", "caching", "security"]:
     sys.path.insert(0, str(LEVEL_DIR / sub) if sub else str(LEVEL_DIR))
 
-from production_common.dataset import prepare  # noqa: E402
-from production_common.embed import OllamaEmbedder  # noqa: E402
-from production_common.llm import OllamaLLM  # noqa: E402
-from qdrant import QdrantStore  # noqa: E402
-from response_cache import ResponseCache  # noqa: E402
-from semantic_cache import SemanticCache  # noqa: E402
-from document_acl import DocumentACL  # noqa: E402
-from personalization import PersonalizationEngine, UserProfile  # noqa: E402
-from observability.telemetry import setup_tracing  # noqa: E402
+from production_common.dataset import prepare
+from production_common.embed import OllamaEmbedder
+from production_common.llm import OllamaLLM
+from qdrant import QdrantStore
+from response_cache import ResponseCache
+from semantic_cache import SemanticCache
+from document_acl import DocumentACL
+from personalization import PersonalizationEngine, UserProfile
+from observability.telemetry import setup_tracing
 
-from .routes import router  # noqa: E402
+from .routes import router
 
 
 @asynccontextmanager

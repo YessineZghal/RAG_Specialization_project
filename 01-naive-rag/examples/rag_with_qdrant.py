@@ -24,10 +24,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.config import settings  # noqa: E402
-from src.ingest import load_from_directory  # noqa: E402
-from src.pipeline import RAGPipeline  # noqa: E402
-from src.retrieve import QdrantVectorStore  # noqa: E402
+from src.config import settings
+from src.ingest import load_from_directory
+from src.pipeline import RAGPipeline
+from src.retrieve import QdrantVectorStore
 
 
 def main() -> None:

@@ -22,12 +22,12 @@ _LEVEL_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_LEVEL_DIR))
 sys.path.insert(0, str(_LEVEL_DIR / "hybrid-search"))  # hyphenated: top-level module import
 
-from bm25_vector import HybridRetriever  # noqa: E402
-from common.dataset import prepare  # noqa: E402
-from common.llm import OllamaLLM  # noqa: E402
-from reranking.cross_encoder import CrossEncoderReranker  # noqa: E402
-from retrieval.dense import DenseRetriever  # noqa: E402
-from retrieval.sparse import BM25Retriever  # noqa: E402
+from bm25_vector import HybridRetriever
+from common.dataset import prepare
+from common.llm import OllamaLLM
+from reranking.cross_encoder import CrossEncoderReranker
+from retrieval.dense import DenseRetriever
+from retrieval.sparse import BM25Retriever
 
 SYSTEM_PROMPT = (
     "You are a helpful scientific assistant. Answer using ONLY the provided "

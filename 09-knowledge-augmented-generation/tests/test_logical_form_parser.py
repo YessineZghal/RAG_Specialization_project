@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "reasoning-engine"))
-from logical_form_parser import parse_logical_form  # noqa: E402
+from logical_form_parser import parse_logical_form
 
 
 def test_parse_logical_form_reads_a_well_formed_response(fake_llm):

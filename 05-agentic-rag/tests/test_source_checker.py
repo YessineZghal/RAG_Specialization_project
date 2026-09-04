@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "verification"))
-from source_checker import check_sources  # noqa: E402
+from source_checker import check_sources
 
 
 def test_check_sources_true_when_supported(fake_llm):

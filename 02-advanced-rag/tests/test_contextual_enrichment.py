@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from chunking.contextual_enrichment import (  # noqa: E402
+from chunking.contextual_enrichment import (
     enrich_chunk,
     enrich_chunks,
     generate_chunk_context,

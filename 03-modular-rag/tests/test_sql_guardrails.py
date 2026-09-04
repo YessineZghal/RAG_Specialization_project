@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "sql-rag"))
-from sql_guardrails import UnsafeQueryError, validate_sql  # noqa: E402
+from sql_guardrails import UnsafeQueryError, validate_sql
 
 
 def test_validate_sql_accepts_select():

@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "retrieval-infrastructure"))
-from qdrant import _point_id  # noqa: E402
+from qdrant import _point_id
 
 
 def test_point_id_is_deterministic_for_the_same_doc_id():

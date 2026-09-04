@@ -44,7 +44,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from modular_common.config import settings  # noqa: E402
+from modular_common.config import settings
 
 DESCRIBE_PROMPT = (
     "Describe exactly what is shown in this image in two or three plain "

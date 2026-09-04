@@ -9,8 +9,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from multiagent_common.agent_result import AgentResult  # noqa: E402
-from multiagent_common.llm import OllamaLLM  # noqa: E402
+from multiagent_common.agent_result import AgentResult
+from multiagent_common.llm import OllamaLLM
 
 ANSWER_PROMPT = """Context from company filings:
 {context}

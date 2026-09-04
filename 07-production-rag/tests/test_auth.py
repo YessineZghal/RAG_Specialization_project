@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from security.auth import AuthError, verify_admin_key, verify_api_key  # noqa: E402
-from production_common.config import settings  # noqa: E402
+from security.auth import AuthError, verify_admin_key, verify_api_key
+from production_common.config import settings
 
 
 def test_verify_api_key_accepts_the_configured_key():

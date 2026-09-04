@@ -19,8 +19,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from reasoning_common.answer_parsing import parse_yes_no  # noqa: E402
-from reasoning_common.llm import OllamaLLM  # noqa: E402
+from reasoning_common.answer_parsing import parse_yes_no
+from reasoning_common.llm import OllamaLLM
 
 DECOMPOSE_PROMPT = (
     "Break the following yes/no question down into {n} simpler sub-"

@@ -17,9 +17,9 @@ _LEVEL_DIR = Path(__file__).resolve().parent.parent
 for sub in ["", "query-classification", "multi-hop-rag", "corrective-rag"]:
     sys.path.insert(0, str(_LEVEL_DIR / sub) if sub else str(_LEVEL_DIR))
 
-from classifier import classify_ensemble, classify_llm, classify_rule  # noqa: E402
-from crag import corrective_retrieve  # noqa: E402
-from subquestion_retrieval import multi_hop_retrieve  # noqa: E402
+from classifier import classify_ensemble, classify_llm, classify_rule
+from crag import corrective_retrieve
+from subquestion_retrieval import multi_hop_retrieve
 
 EXPECTED_LABEL = {"bridge": "multi_hop", "comparison": "complex"}
 

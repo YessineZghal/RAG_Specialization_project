@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from production_eval.ragas_eval import _extract_claims, answer_relevance, faithfulness  # noqa: E402
+from production_eval.ragas_eval import _extract_claims, answer_relevance, faithfulness
 
 
 def test_extract_claims_parses_clean_json_array(fake_llm):

@@ -13,12 +13,12 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from observability.telemetry import CACHE_HITS, CACHE_MISSES, GENERATION_LATENCY, REQUEST_COUNT, REQUEST_LATENCY, RETRIEVAL_LATENCY  # noqa: E402
-from security.auth import AuthError, verify_admin_key, verify_api_key  # noqa: E402
-from security.permissions import PermissionDeniedError, require_permission  # noqa: E402
-from security.prompt_injection import is_suspicious  # noqa: E402
+from observability.telemetry import CACHE_HITS, CACHE_MISSES, GENERATION_LATENCY, REQUEST_COUNT, REQUEST_LATENCY, RETRIEVAL_LATENCY
+from security.auth import AuthError, verify_admin_key, verify_api_key
+from security.permissions import PermissionDeniedError, require_permission
+from security.prompt_injection import is_suspicious
 
-from .schemas import HealthResponse, IngestRequest, IngestResponse, QueryRequest, QueryResponse, Source  # noqa: E402
+from .schemas import HealthResponse, IngestRequest, IngestResponse, QueryRequest, QueryResponse, Source
 
 router = APIRouter()
 

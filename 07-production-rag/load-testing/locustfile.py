@@ -17,7 +17,7 @@ from pathlib import Path
 from locust import HttpUser, between, task
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from production_common.dataset import prepare  # noqa: E402
+from production_common.dataset import prepare
 
 _data = prepare()
 _QUESTIONS = [q["question"] for q in _data.questions.values()]

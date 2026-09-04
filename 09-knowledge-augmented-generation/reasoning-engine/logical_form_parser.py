@@ -23,7 +23,7 @@ from pathlib import Path
 from pydantic import BaseModel, ValidationError
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from kag_common.llm import OllamaLLM  # noqa: E402
+from kag_common.llm import OllamaLLM
 
 ALL_OPERATORS = ("retrieval", "kg_reasoning", "language_reasoning", "numerical_calculation")
 

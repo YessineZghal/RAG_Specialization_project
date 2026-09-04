@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from inference.vllm_client import VLLMBackend  # noqa: E402
+from inference.vllm_client import VLLMBackend
 
 
 class _FakeResponse:

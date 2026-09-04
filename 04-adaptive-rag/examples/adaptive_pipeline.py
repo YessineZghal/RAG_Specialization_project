@@ -19,12 +19,12 @@ LEVEL_DIR = Path(__file__).resolve().parent.parent
 for sub in ["", "query-classification", "dynamic-retrieval", "corrective-rag", "fallback-strategies"]:
     sys.path.insert(0, str(LEVEL_DIR / sub) if sub else str(LEVEL_DIR))
 
-from adaptive_common.dataset import prepare  # noqa: E402
-from adaptive_common.llm import OllamaLLM  # noqa: E402
-from adaptive_common.retrieval import DenseRetriever  # noqa: E402
-from classifier import classify_ensemble  # noqa: E402
-from crag import corrective_retrieve  # noqa: E402
-from retry import retrieve_with_retry  # noqa: E402
+from adaptive_common.dataset import prepare
+from adaptive_common.llm import OllamaLLM
+from adaptive_common.retrieval import DenseRetriever
+from classifier import classify_ensemble
+from crag import corrective_retrieve
+from retry import retrieve_with_retry
 
 
 def main() -> None:

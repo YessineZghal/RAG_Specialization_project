@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "verification"))
-from answer_verifier import normalize, verify_answer  # noqa: E402
+from answer_verifier import normalize, verify_answer
 
 
 def test_verify_answer_matches_embedded_alias():

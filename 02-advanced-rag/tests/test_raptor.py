@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from chunking.raptor import (  # noqa: E402
+from chunking.raptor import (
     RaptorNode,
     build_raptor_tree,
     cluster_by_similarity,

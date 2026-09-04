@@ -4,8 +4,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "graph-rag"))
-from graph_builder import build_graph  # noqa: E402
-from graph_retrieval import describe_node, find_matching_nodes, graph_search  # noqa: E402
+from graph_builder import build_graph
+from graph_retrieval import describe_node, find_matching_nodes, graph_search
 
 TRIPLES = [
     {"subject": "Ashish Vaswani", "relation": "works at", "object": "Google Brain"},

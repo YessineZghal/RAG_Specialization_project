@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "graph-of-thought"))
-from thought_graph import ThoughtGraph  # noqa: E402
+from thought_graph import ThoughtGraph
 
 
 def test_add_thought_with_no_parents_is_a_root():

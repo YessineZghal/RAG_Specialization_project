@@ -11,10 +11,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from adaptive_common.llm import OllamaLLM  # noqa: E402
+from adaptive_common.llm import OllamaLLM
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from planner import plan_subquestions  # noqa: E402
+from planner import plan_subquestions
 
 
 def multi_hop_retrieve(

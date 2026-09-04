@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from security.permissions import PermissionDeniedError, require_permission  # noqa: E402
+from security.permissions import PermissionDeniedError, require_permission
 
 
 def test_admin_can_do_everything_a_user_can():

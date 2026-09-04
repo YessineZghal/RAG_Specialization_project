@@ -17,9 +17,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from reasoning_common.llm import OllamaLLM  # noqa: E402
+from reasoning_common.llm import OllamaLLM
 
-from thought_generator import format_partial_path  # noqa: E402
+from thought_generator import format_partial_path
 
 EVALUATE_PROMPT = (
     "Context:\n{context}\n\nQuestion: {question}\n\n"

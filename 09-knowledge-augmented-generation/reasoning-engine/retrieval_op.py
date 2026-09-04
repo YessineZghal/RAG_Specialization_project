@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from kag_common.embed import OllamaEmbedder, cosine_search  # noqa: E402
+from kag_common.embed import OllamaEmbedder, cosine_search
 
 
 @dataclass(frozen=True)

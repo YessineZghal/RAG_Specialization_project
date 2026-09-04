@@ -13,9 +13,9 @@ sys.path.insert(0, str(_LEVEL_DIR))
 sys.path.insert(0, str(_LEVEL_DIR / "query-classification"))
 sys.path.insert(0, str(_LEVEL_DIR / "multi-hop-rag"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # this file's own dir, for dynamic_top_k
-from adaptive_common.llm import OllamaLLM  # noqa: E402
-from classifier import classify_rule  # noqa: E402
-from dynamic_top_k import dynamic_top_k  # noqa: E402
+from adaptive_common.llm import OllamaLLM
+from classifier import classify_rule
+from dynamic_top_k import dynamic_top_k
 
 
 def multi_query_retrieve(question: str, retriever, llm: OllamaLLM, top_k: int) -> list[tuple[str, float]]:

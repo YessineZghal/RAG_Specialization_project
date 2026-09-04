@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "reasoning-engine"))
-from language_reasoning_op import reason_in_language  # noqa: E402
+from language_reasoning_op import reason_in_language
 
 
 def test_reason_in_language_parses_a_clear_yes_verdict(fake_llm):

@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from modular_common.embed import embed_texts  # noqa: E402
+from modular_common.embed import embed_texts
 
 
 class ListReturningEmbedder:

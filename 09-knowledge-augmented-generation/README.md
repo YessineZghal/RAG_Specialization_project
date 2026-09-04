@@ -321,7 +321,8 @@ a string for a relation's `object` field (schema-constrained extraction never hi
 its Pydantic model would reject the same shape outright — real, measured evidence that
 unconstrained extraction is not just less structured, it is also more brittle to parse safely).
 
-461 tests pass across the full repo (up from 387 after Level 8).
+461 tests passed across the full repo at the time this level was built (up from 387 after Level 8);
+474 now that Level 8's own mini project (`strategy_selector.py`) was added in a later pass.
 
 ---
 
@@ -366,7 +367,14 @@ unconstrained extraction is not just less structured, it is also more brittle to
 
 ## Next
 
-This is the last documented extension so far. Return to
+This is the last documented extension so far. HyDE, RAPTOR, ColBERT/late interaction, and
+Contextual Retrieval — once this backlog — are now all implemented in
+[Level 2](../02-advanced-rag/README.md#eight-additions-from-the-taxonomy-review). What's still
+genuinely unbuilt: true CLIP-style visual multimodal embeddings (Level 3's caption-based
+multimodal retrieval is a disclosed, deliberate simplification, not this), corpus-poisoning
+defense (a different attack surface than Level 7's query-time prompt-injection guard), and the
+frontier techniques in
 [`../GAP_ANALYSIS.md`](../GAP_ANALYSIS.md#g-frontier-techniques--real-but-a-heavier-lift-than-this-repos-run-it-for-real-on-a-laptop-philosophy-supports)
-for the backlog of gaps that didn't get a full level yet (HyDE, RAPTOR, ColBERT/late interaction,
-Contextual Retrieval, and others), or the [root README](../README.md) for the full roadmap.
+(RL-trained retrieval policies, federated RAG) — both real, but a heavier infrastructure lift than
+this repo's "run it for real on a laptop with Ollama" philosophy supports. Or see the
+[root README](../README.md) for the full roadmap.

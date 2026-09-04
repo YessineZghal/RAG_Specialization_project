@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "multi-retriever"))
-from retriever_fusion import reciprocal_rank_fusion  # noqa: E402
+from retriever_fusion import reciprocal_rank_fusion
 
 
 def test_fusion_boosts_items_ranked_highly_across_sources():

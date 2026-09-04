@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "supervisor"))
-from supervisor import Supervisor  # noqa: E402
+from supervisor import Supervisor
 
 
 def test_route_selects_named_agents(fake_llm):

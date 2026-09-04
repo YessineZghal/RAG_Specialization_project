@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from multiagent_common.agent_result import AgentResult  # noqa: E402
-from multiagent_common.llm import OllamaLLM  # noqa: E402
+from multiagent_common.agent_result import AgentResult
+from multiagent_common.llm import OllamaLLM
 
 AGENT_DESCRIPTIONS = """- retrieval-agent: searches real SEC 10-K filing excerpts for company facts
 - sql-agent: queries the Sakila DVD rental business database

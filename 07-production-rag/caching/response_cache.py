@@ -21,10 +21,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from production_common.config import settings  # noqa: E402
+from production_common.config import settings
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "retrieval-infrastructure"))
-from redis_store import RedisStore  # noqa: E402
+from redis_store import RedisStore
 
 DEFAULT_TTL_SECONDS = 3600
 

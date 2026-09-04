@@ -14,8 +14,8 @@ from pathlib import Path
 import networkx as nx
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from multiagent_common.agent_result import AgentResult  # noqa: E402
-from multiagent_common.llm import OllamaLLM  # noqa: E402
+from multiagent_common.agent_result import AgentResult
+from multiagent_common.llm import OllamaLLM
 
 EXTRACTION_PROMPT = """Extract factual (subject, relation, object) triples about companies from the text below.
 Only extract facts that are explicitly stated. Use short, consistent entity names (e.g. company ticker or name).

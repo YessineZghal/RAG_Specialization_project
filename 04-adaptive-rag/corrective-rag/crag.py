@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from adaptive_common.llm import OllamaLLM  # noqa: E402
+from adaptive_common.llm import OllamaLLM
 
 GRADE_PROMPT = """Does the following passage contain information that helps answer the question?
 Respond with only one word: relevant, ambiguous, or irrelevant.

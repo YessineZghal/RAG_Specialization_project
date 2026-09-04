@@ -5,8 +5,8 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "workflows"))
-from sequential import run_sequential  # noqa: E402
-from parallel import run_parallel  # noqa: E402
+from sequential import run_sequential
+from parallel import run_parallel
 
 
 def test_run_sequential_calls_every_agent(fake_agent):

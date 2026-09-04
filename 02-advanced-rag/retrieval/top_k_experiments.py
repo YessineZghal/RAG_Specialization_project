@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Protocol
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # 02-advanced-rag/
-from evaluation.recall_at_k import recall_at_k  # noqa: E402
+from evaluation.recall_at_k import recall_at_k
 
 
 class Retriever(Protocol):

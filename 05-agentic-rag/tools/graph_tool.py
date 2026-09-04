@@ -14,7 +14,7 @@ from pathlib import Path
 import networkx as nx
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from agentic_common.llm import OllamaLLM  # noqa: E402
+from agentic_common.llm import OllamaLLM
 
 EXTRACTION_PROMPT = """Extract factual (subject, relation, object) triples from the text below.
 Only extract facts that are explicitly stated. Use short, consistent entity names.

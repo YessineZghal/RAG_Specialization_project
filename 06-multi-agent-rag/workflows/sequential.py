@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from multiagent_common.agent_result import AgentResult  # noqa: E402
+from multiagent_common.agent_result import AgentResult
 
 
 def run_sequential(task: str, agents: dict[str, object], carry_context: bool = False) -> dict[str, AgentResult]:

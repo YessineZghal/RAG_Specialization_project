@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from kag_eval.metrics import evaluate  # noqa: E402
+from kag_eval.metrics import evaluate
 
 
 def test_evaluate_computes_plain_accuracy():

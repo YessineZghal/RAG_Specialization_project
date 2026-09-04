@@ -16,8 +16,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from kag_common.answer_parsing import parse_yes_no_maybe  # noqa: E402
-from kag_common.llm import OllamaLLM  # noqa: E402
+from kag_common.answer_parsing import parse_yes_no_maybe
+from kag_common.llm import OllamaLLM
 
 LANGUAGE_REASONING_PROMPT = """Answer the following biomedical research question using ONLY the evidence given. The evidence may include retrieved abstract text, structured knowledge-graph facts, and/or a numeric calculation result.
 

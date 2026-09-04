@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "metadata-filtering"))
-from self_query import SelfQueryFilters, parse_self_query, self_query_search  # noqa: E402
+from self_query import SelfQueryFilters, parse_self_query, self_query_search
 
 
 class FakeRetriever:

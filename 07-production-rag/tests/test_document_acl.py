@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from security.document_acl import DocumentACL  # noqa: E402
+from security.document_acl import DocumentACL
 
 
 def test_doc_with_no_owner_entry_is_public():

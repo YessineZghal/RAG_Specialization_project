@@ -16,16 +16,16 @@ import networkx as nx
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from kg_reasoning_op import reason_over_graph  # noqa: E402
-from language_reasoning_op import reason_in_language  # noqa: E402
-from logical_form_parser import LogicalForm, parse_logical_form  # noqa: E402
-from numerical_op import evaluate_numeric  # noqa: E402
-from retrieval_op import retrieve  # noqa: E402
+from kg_reasoning_op import reason_over_graph
+from language_reasoning_op import reason_in_language
+from logical_form_parser import LogicalForm, parse_logical_form
+from numerical_op import evaluate_numeric
+from retrieval_op import retrieve
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from indexing.mutual_index import MutualIndex  # noqa: E402
-from kag_common.embed import OllamaEmbedder  # noqa: E402
-from kag_common.llm import OllamaLLM  # noqa: E402
+from indexing.mutual_index import MutualIndex
+from kag_common.embed import OllamaEmbedder
+from kag_common.llm import OllamaLLM
 
 
 @dataclass(frozen=True)

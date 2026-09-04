@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from security.personalization import PersonalizationEngine, UserProfile  # noqa: E402
+from security.personalization import PersonalizationEngine, UserProfile
 
 CORPUS = {
     "doc-sports": {"title": "Local team wins championship", "text": "A thrilling sports victory."},

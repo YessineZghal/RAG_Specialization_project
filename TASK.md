@@ -143,9 +143,9 @@ into build order.
 - [x] **`graph-of-thought/`** — `thought_graph.py` (a `networkx`-backed graph where a node can have more than one parent), `graph_search.py` (adds a real aggregation/merge step on top of the tree search), `hgot_retrieval.py` (decomposes into sub-questions, retrieves separately for each, citation-aware voting).
 - [x] **`reasoning_eval/`** (renamed from the planned `evaluation/` — collided with Level 2's real package immediately, same fix as Level 7's `production_eval/`) — `metrics.py` (accuracy + cost against real ground truth) and `cost_tracker.py` (an independent LLM-call counter, on top of each strategy's own self-reported count).
 - [x] **`examples/reasoning_pipeline.py`** — CLI entry point, `--strategy cot|tot|got|hgot`.
-- [x] **`tests/`** — 59 offline tests, including a full scripted call-sequence trace of the tree search and a structural test proving Graph-of-Thoughts' aggregation produces a real multi-parent graph node.
+- [x] **`tests/`** — 72 offline tests, including a full scripted call-sequence trace of the tree search and a structural test proving Graph-of-Thoughts' aggregation produces a real multi-parent graph node.
 - [x] **`notebooks/`** — all 4 executed for real against live Ollama and the real corpus.
-- [ ] **Mini project** — an end-to-end example choosing a strategy per question type (not built this pass).
+- [x] **Mini project** — `examples/strategy_selector.py`, an end-to-end example choosing a strategy per question type: `reasoning_common/strategy_classifier.py` classifies a question into simple/comparative/combinatorial/multi_hop, mapped one-to-one onto cot/tot/got/hgot, fails open to `cot` on an unparseable response. Verified genuinely dispatching differently per question (real run: `tot` for one StrategyQA question, `got` for another), not a fixed choice. 13 new offline tests (8 for the classifier, 5 for the dispatch logic via monkeypatching the four strategy functions).
 
 **What actually happened, the headline finding:** a real 8-question evaluation
 (`reasoning_eval/metrics.py`'s `compare_strategies`) found Chain-of-Thought (1 LLM call) scored
@@ -160,8 +160,10 @@ step then combined it into an even more confident-sounding wrong paragraph. Full
 **Done:** `08-reasoning-strategies/README.md` fully rewritten — status banner flipped to
 "implemented and executed end-to-end," the Evaluation section carries the real comparison table
 and the full Mount Fuji trace, Common Failure Modes updated from "anticipated" to "confirmed,"
-Checklist updated, offline test suite at 59 for this level (387 across the full repo, up from
-328), root `README.md`'s status line and roadmap table updated to mark Level 8 done.
+Checklist fully checked (including the mini project, completed in a later pass), a new **Mini
+Project** section documents `strategy_selector.py`, offline test suite at 72 for this level (474
+across the full repo), root `README.md`'s status line and roadmap table updated to mark Level 8
+done.
 
 ---
 
@@ -199,7 +201,8 @@ carries the full real comparison + root cause + ablation, Common Failure Modes u
 "anticipated" to "confirmed" (including two findings not anticipated going in: a 30-50%
 unparseable-JSON extraction rate, and the router's *systematic*, one-sided bias against retrieval
 rather than generic noise), Checklist updated, offline test suite at 74 for this level (461 across
-the full repo, up from 387), root `README.md`'s status line and roadmap table updated to mark
+the full repo at the time, 474 now that Level 8's mini project was added in a later pass), root
+`README.md`'s status line and roadmap table updated to mark
 Level 9 done.
 
 ---

@@ -9,8 +9,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from multiagent_common.agent_result import AgentResult  # noqa: E402
-from multiagent_common.llm import OllamaLLM  # noqa: E402
+from multiagent_common.agent_result import AgentResult
+from multiagent_common.llm import OllamaLLM
 
 SYNTHESIS_PROMPT = """Multiple specialized agents investigated this task. Combine their findings
 into one coherent answer, noting which agent each piece of information came from.

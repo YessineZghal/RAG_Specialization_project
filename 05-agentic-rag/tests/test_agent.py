@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from agents.rag_agent import RAGAgent  # noqa: E402
+from agents.rag_agent import RAGAgent
 
 
 def test_parse_decision_extracts_action_and_input():

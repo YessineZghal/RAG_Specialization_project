@@ -12,8 +12,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from common.config import settings  # noqa: E402
-from reranking.cross_encoder import CrossEncoderReranker  # noqa: E402
+from common.config import settings
+from reranking.cross_encoder import CrossEncoderReranker
 
 
 class BGEReranker(CrossEncoderReranker):

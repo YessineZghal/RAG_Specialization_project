@@ -6,12 +6,12 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from multiagent_common.loader import load_agent_class  # noqa: E402
+from multiagent_common.loader import load_agent_class
 
 # sql-agent/agent.py's module-level UnsafeQueryError/validate_sql aren't
 # part of the SqlAgent class, so load the module directly (not just the
 # class) via the same file-path mechanism the loader uses internally.
-import importlib.util  # noqa: E402
+import importlib.util
 
 _spec = importlib.util.spec_from_file_location("_test_sql_agent_module", Path(__file__).resolve().parent.parent / "sql-agent" / "agent.py")
 _sql_agent_module = importlib.util.module_from_spec(_spec)

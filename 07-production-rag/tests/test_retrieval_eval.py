@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from production_eval.retrieval_eval import mrr, ndcg_at_k, recall_at_k  # noqa: E402
+from production_eval.retrieval_eval import mrr, ndcg_at_k, recall_at_k
 
 
 def test_recall_at_k_perfect_case():

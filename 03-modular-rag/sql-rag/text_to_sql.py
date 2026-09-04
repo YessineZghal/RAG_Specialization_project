@@ -8,11 +8,11 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from modular_common.llm import OllamaLLM  # noqa: E402
+from modular_common.llm import OllamaLLM
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from schema import schema_prompt_block  # noqa: E402
-from sql_guardrails import run_safely, validate_sql  # noqa: E402
+from schema import schema_prompt_block
+from sql_guardrails import run_safely, validate_sql
 
 TEXT_TO_SQL_PROMPT = """You write SQLite queries against the schema below.
 

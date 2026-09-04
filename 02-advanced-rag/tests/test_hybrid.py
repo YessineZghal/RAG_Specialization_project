@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "hybrid-search"))
-from bm25_vector import HybridRetriever  # noqa: E402
+from bm25_vector import HybridRetriever
 
 from retrieval.dense import DenseRetriever
 from retrieval.sparse import BM25Retriever

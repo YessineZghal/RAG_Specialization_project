@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from indexing.mutual_index import MutualIndex  # noqa: E402
+from indexing.mutual_index import MutualIndex
 
 
 def test_add_entity_is_queryable_from_both_directions():

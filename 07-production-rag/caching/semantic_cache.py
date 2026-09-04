@@ -23,11 +23,11 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from production_common.config import settings  # noqa: E402
-from production_common.embed import OllamaEmbedder  # noqa: E402
+from production_common.config import settings
+from production_common.embed import OllamaEmbedder
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "retrieval-infrastructure"))
-from redis_store import RedisStore  # noqa: E402
+from redis_store import RedisStore
 
 CACHE_KEY = "semantic_cache:entries"
 MAX_ENTRIES = 500

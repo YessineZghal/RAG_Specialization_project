@@ -14,7 +14,7 @@ from pathlib import Path
 # every file here adds its own directory to sys.path so sibling modules
 # import as plain top-level names, regardless of how this file is invoked.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from rrf import reciprocal_rank_fusion  # noqa: E402
+from rrf import reciprocal_rank_fusion
 
 
 class HybridRetriever:

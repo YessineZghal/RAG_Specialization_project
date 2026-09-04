@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from chunking.hierarchical import HierarchicalNode, build_hierarchy, hierarchical_search  # noqa: E402
+from chunking.hierarchical import HierarchicalNode, build_hierarchy, hierarchical_search
 
 
 def test_build_hierarchy_creates_three_levels():

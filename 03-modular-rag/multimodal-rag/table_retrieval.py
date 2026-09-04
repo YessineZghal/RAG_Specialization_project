@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from modular_common.pdf import load_pages  # noqa: E402
+from modular_common.pdf import load_pages
 
 CAPTION_RE = re.compile(r"\bTable\s+(\d+)\s*:")
 WINDOW_CHARS = 500

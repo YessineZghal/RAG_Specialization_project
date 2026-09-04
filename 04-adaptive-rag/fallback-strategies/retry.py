@@ -13,10 +13,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from adaptive_common.llm import OllamaLLM  # noqa: E402
+from adaptive_common.llm import OllamaLLM
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from web_fallback import web_fallback_context  # noqa: E402
+from web_fallback import web_fallback_context
 
 REWRITE_PROMPT = (
     "Rewrite this question with different, more specific search terms. "

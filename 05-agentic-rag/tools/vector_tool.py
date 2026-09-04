@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from agentic_common.retrieval import DenseRetriever  # noqa: E402
+from agentic_common.retrieval import DenseRetriever
 
 
 class VectorTool:

@@ -583,6 +583,12 @@ You should be able to answer:
 - **Can new content be added without restarting the service?** Yes — `POST /admin/ingest`,
   verified live: a document about a topic absent at startup was correctly answerable within
   seconds of being added, no restart.
+- **What about an attacker planting malicious documents into the index ahead of time (corpus
+  poisoning), rather than injecting at query time?** Not covered — `security/prompt_injection.py`
+  only defends a live query or an already-retrieved passage, never the ingestion path itself. A
+  different, narrower attack surface than this level tackles (see
+  [`../GAP_ANALYSIS.md`](../GAP_ANALYSIS.md#f-security-beyond-prompt-injection--a-different-attack-surface-than-level-7-covers)
+  for the research context) — disclosed here, not built.
 
 ---
 

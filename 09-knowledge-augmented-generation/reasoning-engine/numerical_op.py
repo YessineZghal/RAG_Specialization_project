@@ -23,7 +23,7 @@ from pathlib import Path
 import networkx as nx
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from kg_reasoning_op import find_matching_nodes  # noqa: E402
+from kg_reasoning_op import find_matching_nodes
 
 _COMPARATORS = {
     ">": op_module.gt,

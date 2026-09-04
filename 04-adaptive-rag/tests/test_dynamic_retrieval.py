@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "dynamic-retrieval"))
-from dynamic_top_k import dynamic_top_k  # noqa: E402
+from dynamic_top_k import dynamic_top_k
 
 
 def test_dynamic_top_k_none_is_zero():

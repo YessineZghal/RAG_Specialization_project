@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from common.llm import OllamaLLM  # noqa: E402
+from common.llm import OllamaLLM
 
 CONTEXTUAL_ENRICHMENT_PROMPT = (
     "Document:\n{document}\n\n"

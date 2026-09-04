@@ -5,8 +5,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from schema.constrained_extraction import extract_from_document  # noqa: E402
-from schema.domain_schema import SchemaValidator  # noqa: E402
+from schema.constrained_extraction import extract_from_document
+from schema.domain_schema import SchemaValidator
 
 
 def test_extract_from_document_keeps_well_formed_schema_conforming_output(fake_llm):

@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from common.llm import OllamaLLM  # noqa: E402
+from common.llm import OllamaLLM
 
 STEP_BACK_PROMPT = (
     "Given the following specific question, write a single more general "

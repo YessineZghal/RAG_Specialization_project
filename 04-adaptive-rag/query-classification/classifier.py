@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from adaptive_common.llm import OllamaLLM  # noqa: E402
+from adaptive_common.llm import OllamaLLM
 
 LABELS = ("none", "simple", "complex", "multi_hop")
 

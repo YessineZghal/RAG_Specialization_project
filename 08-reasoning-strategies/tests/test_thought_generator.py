@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tree-of-thought"))
-from thought_generator import format_partial_path, generate_thoughts  # noqa: E402
+from thought_generator import format_partial_path, generate_thoughts
 
 
 def test_format_partial_path_with_no_steps_yet():

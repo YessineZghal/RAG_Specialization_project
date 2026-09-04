@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from multiagent_common.loader import load_agent_class  # noqa: E402
+from multiagent_common.loader import load_agent_class
 
 
 def test_loader_loads_distinct_agent_py_files_without_collision():

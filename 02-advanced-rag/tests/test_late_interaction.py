@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from retrieval.late_interaction import LateInteractionRetriever, maxsim_score  # noqa: E402
+from retrieval.late_interaction import LateInteractionRetriever, maxsim_score
 
 
 def test_maxsim_score_sums_the_best_match_per_query_vector():

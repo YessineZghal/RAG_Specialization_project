@@ -27,15 +27,15 @@ _LEVEL_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_LEVEL_DIR))
 sys.path.insert(0, str(_LEVEL_DIR / "reasoning-engine"))
 
-from kag_common.config import settings  # noqa: E402
-from kag_common.dataset import prepare  # noqa: E402
-from kag_common.embed import OllamaEmbedder, embed_texts  # noqa: E402
-from kag_common.llm import OllamaLLM  # noqa: E402
-from indexing.graph_builder import build_graph, load_graph, save_graph  # noqa: E402
-from operator_router import answer_question  # noqa: E402
+from kag_common.config import settings
+from kag_common.dataset import prepare
+from kag_common.embed import OllamaEmbedder, embed_texts
+from kag_common.llm import OllamaLLM
+from indexing.graph_builder import build_graph, load_graph, save_graph
+from operator_router import answer_question
 
-from kag_eval.metrics import evaluate  # noqa: E402
-from kag_eval.simple_graphrag_baseline import baseline_answer, build_unconstrained_graph  # noqa: E402
+from kag_eval.metrics import evaluate
+from kag_eval.simple_graphrag_baseline import baseline_answer, build_unconstrained_graph
 
 RESULTS_FILE = Path(__file__).resolve().parent / "comparison_results.json"
 KAG_GRAPH_CACHE = settings.cache_dir / "kag_graph_eval.json"

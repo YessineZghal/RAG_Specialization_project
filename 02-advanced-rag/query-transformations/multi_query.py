@@ -13,8 +13,8 @@ from pathlib import Path
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE.parent))  # 02-advanced-rag/  (for common.llm)
 sys.path.insert(0, str(_HERE.parent / "hybrid-search"))  # for top-level `rrf`
-from common.llm import OllamaLLM  # noqa: E402
-from rrf import reciprocal_rank_fusion  # noqa: E402
+from common.llm import OllamaLLM
+from rrf import reciprocal_rank_fusion
 
 MULTI_QUERY_PROMPT = (
     "Generate {n} different search queries that would each help answer the "

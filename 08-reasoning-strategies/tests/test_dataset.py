@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from reasoning_common.dataset import split_sentences  # noqa: E402
+from reasoning_common.dataset import split_sentences
 
 
 def test_split_sentences_splits_on_sentence_boundaries():

@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "query-transformations"))
-from conversational_rewrite import (  # noqa: E402
+from conversational_rewrite import (
     conversational_search,
     format_history,
     rewrite_with_history,

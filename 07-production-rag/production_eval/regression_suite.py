@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from production_common.config import settings  # noqa: E402
+from production_common.config import settings
 
 BASELINE_FILE = settings.level_dir / "production_eval" / "baseline_metrics.json"
 REGRESSION_TOLERANCE = 0.05  # allow up to a 5-point drop before flagging

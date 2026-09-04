@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "corrective-rag"))
-from crag import corrective_retrieve, grade_passage  # noqa: E402
+from crag import corrective_retrieve, grade_passage
 
 
 def test_grade_passage_parses_relevant(fake_llm):

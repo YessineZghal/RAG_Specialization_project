@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tree-of-thought"))
-from state_evaluator import evaluate_state  # noqa: E402
+from state_evaluator import evaluate_state
 
 
 def test_evaluate_state_normalizes_a_ten_point_score_to_zero_one(fake_llm):

@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "metadata-filtering"))
-from filters import build_length_metadata, filter_by_metadata, filtered_search  # noqa: E402
+from filters import build_length_metadata, filter_by_metadata, filtered_search
 
 
 def test_build_length_metadata_buckets_by_word_count():
