@@ -1,0 +1,11 @@
+# Scrapes the FastAPI app's /metrics endpoint. The API runs on the host
+# (uvicorn, not containerized, for this level's local dev workflow --
+# see docker/api.Dockerfile for the containerized version), so Prometheus
+# (running inside Docker) reaches it via host.docker.internal.
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "rag-production-api"
+    static_configs:
+      - targets: ["host.docker.internal:8001"]

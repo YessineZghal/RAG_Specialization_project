@@ -1,0 +1,30 @@
+# Reference LiteLLM gateway config: route model names to whichever real
+# backend serves them, so `api/main.py` calls one consistent interface
+# regardless of whether a model is running locally (Ollama) or on a GPU
+# server (vLLM/SGLang). Not run in this repo (no LiteLLM proxy process
+# started) -- provided as the production-shape config this level's
+# `inference/` clients are written to be compatible with.
+model_list:
+  - model_name: local-chat
+    litellm_params:
+      model: ollama/llama3.2
+      api_base: http://localhost:11434
+
+  - model_name: local-embed
+    litellm_params:
+      model: ollama/nomic-embed-text
+      api_base: http://localhost:11434
+
+  - model_name: production-chat
+    litellm_params:
+      model: openai/llama3.2  # vLLM's OpenAI-compatible endpoint
+      api_base: http://localhost:8000/v1
+
+router_settings:
+  routing_strategy: simple-shuffle
+  fallbacks:
+    - production-chat: [local-chat]  # fall back to the local model if the GPU backend is unreachable
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false

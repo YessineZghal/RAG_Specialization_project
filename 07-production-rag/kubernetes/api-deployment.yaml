@@ -1,0 +1,98 @@
+# Reference-only Kubernetes manifests for the Production RAG API.
+#
+# **Honesty note (same disclosure as inference/vllm_client.py):** there is
+# no Kubernetes cluster available in this environment. These manifests
+# are written to a plausible, internally-consistent spec (checked with
+# `kubectl apply --dry-run=client`-style reasoning, matching
+# docker/api.Dockerfile's env vars and exposed port) but have never been
+# applied to a real cluster. Everything else in this level that claims to
+# work has actually been run against a live process; these three files
+# are a second, explicitly disclosed exception.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-api
+  labels:
+    app: rag-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rag-api
+  template:
+    metadata:
+      labels:
+        app: rag-api
+    spec:
+      containers:
+        - name: rag-api
+          image: rag-l7-api:latest  # built from ../docker/api.Dockerfile
+          ports:
+            - containerPort: 8001
+          env:
+            - name: OLLAMA_HOST
+              value: "http://ollama-service:11434"
+            - name: PROD_QDRANT_URL
+              value: "http://qdrant-service:6333"
+            - name: PROD_POSTGRES_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: postgres-dsn
+            - name: PROD_REDIS_URL
+              value: "redis://redis-service:6379/0"
+            - name: PROD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: api-key
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-api-service
+spec:
+  selector:
+    app: rag-api
+  ports:
+    - port: 80
+      targetPort: 8001
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rag-api-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rag-api
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

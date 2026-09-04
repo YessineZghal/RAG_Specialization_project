@@ -1,0 +1,30 @@
+# Reference-only -- see api-deployment.yaml's honesty note. Assumes an
+# ingress-nginx controller is already installed on the cluster and that
+# TLS termination is handled by cert-manager (annotations only, no
+# ClusterIssuer defined here -- that's cluster-wide config, out of scope
+# for one level's manifests).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rag-api-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"  # generation can take
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"  # several seconds, see README.md#load-testing
+spec:
+  tls:
+    - hosts:
+        - rag-api.example.com
+      secretName: rag-api-tls
+  rules:
+    - host: rag-api.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rag-api-service
+                port:
+                  number: 80

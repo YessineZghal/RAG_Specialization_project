@@ -1,0 +1,21 @@
+# Optional infrastructure for the RAG specialization repo.
+#
+# Nothing here is required for Level 1's default path (in-memory vector
+# store + Ollama). Start Qdrant only when running
+# `01-naive-rag/examples/rag_with_qdrant.py`.
+#
+#   docker compose up -d qdrant
+#
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: rag-qdrant
+    ports:
+      - "6333:6333" # REST + dashboard (http://localhost:6333/dashboard)
+      - "6334:6334" # gRPC
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    restart: unless-stopped
+
+volumes:
+  qdrant_storage:

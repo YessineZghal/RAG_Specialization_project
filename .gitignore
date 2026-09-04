@@ -1,0 +1,56 @@
+# --- Python -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# --- uv / venvs ---------------------------------------------------------------
+.venv/
+venv/
+
+# --- Env / secrets ------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# --- Test / lint caches ---------------------------------------------------
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Jupyter ------------------------------------------------------------------
+.ipynb_checkpoints/
+
+# --- Datasets & model caches (never committed — fetched at runtime) -----------
+**/.hf_cache/
+**/.cache/
+*.parquet
+*.arrow
+
+# --- Generated indexes / embeddings (rebuildable, not source) -----------------
+**/data/index/
+**/data/cache/
+03-modular-rag/data/pdfs/*.pdf
+03-modular-rag/data/pdfs/images/
+03-modular-rag/data/sql/*.sqlite
+05-agentic-rag/data/sql/*.sqlite
+06-multi-agent-rag/data/sql/*.sqlite
+07-production-rag/data/cache/
+**/data/*.faiss
+**/data/*.npz
+
+# --- Local infra state ----------------------------------------------------
+qdrant_storage/
+grafana-data/
+
+# --- Scratch/working files (not part of the repo) -----------------------
+.tmp/
+
+# --- OS / editor ------------------------------------------------------------
+.DS_Store
+.idea/
+.vscode/
+*.swp

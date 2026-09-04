@@ -1,0 +1,134 @@
+{
+  "n_documents": 25,
+  "n_questions": 25,
+  "seed": 42,
+  "elapsed_seconds": 503.0,
+  "gold_distribution": {
+    "yes": 8,
+    "no": 11,
+    "maybe": 6
+  },
+  "kag": {
+    "accuracy": 0.32,
+    "n_correct": 8,
+    "n_unparseable": 2,
+    "per_label": {
+      "yes": {
+        "total": 8
+      },
+      "no": {
+        "total": 11,
+        "correct": 8
+      },
+      "maybe": {
+        "total": 6
+      }
+    },
+    "predicted_distribution": {
+      "no": 20,
+      "maybe": 3
+    },
+    "operator_usage": {
+      "language_reasoning": 25,
+      "kg_reasoning": 25
+    },
+    "schema_validator": "loaded from cache, not recomputed"
+  },
+  "baseline_unconstrained_graphrag": {
+    "accuracy": 0.64,
+    "n_correct": 16,
+    "n_unparseable": 1,
+    "per_label": {
+      "yes": {
+        "total": 8,
+        "correct": 5
+      },
+      "no": {
+        "total": 11,
+        "correct": 7
+      },
+      "maybe": {
+        "total": 6,
+        "correct": 4
+      }
+    },
+    "predicted_distribution": {
+      "no": 10,
+      "maybe": 6,
+      "yes": 8
+    }
+  },
+  "n_disagreements": 16,
+  "sample_disagreements": [
+    {
+      "qid": "24450673",
+      "question": "Delayed imaging in routine CT examinations of the abdomen and pelvis: is it worth the additional cost of radiation and time?",
+      "gold": "no",
+      "kag": null,
+      "baseline": "maybe"
+    },
+    {
+      "qid": "25636371",
+      "question": "Is it possible to stop treatment with nucleos(t)ide analogs in patients with e-antigen negative chronic hepatitis B?",
+      "gold": "maybe",
+      "kag": null,
+      "baseline": "maybe"
+    },
+    {
+      "qid": "25987398",
+      "question": "The influence of atmospheric pressure on aortic aneurysm rupture--is the diameter of the aneurysm important?",
+      "gold": "maybe",
+      "kag": "no",
+      "baseline": "maybe"
+    },
+    {
+      "qid": "20101129",
+      "question": "Is prophylactic fixation a cost-effective method to prevent a future contralateral fragility hip fracture?",
+      "gold": "maybe",
+      "kag": "no",
+      "baseline": "maybe"
+    },
+    {
+      "qid": "25940336",
+      "question": "Does Residency Selection Criteria Predict Performance in Orthopaedic Surgery Residency?",
+      "gold": "yes",
+      "kag": "no",
+      "baseline": "maybe"
+    },
+    {
+      "qid": "11411430",
+      "question": "Antral follicle assessment as a tool for predicting outcome in IVF--is it a better predictor than age and FSH?",
+      "gold": "maybe",
+      "kag": "no",
+      "baseline": "yes"
+    },
+    {
+      "qid": "18403944",
+      "question": "Gluten tolerance in adult patients with celiac disease 20 years after diagnosis?",
+      "gold": "maybe",
+      "kag": "no",
+      "baseline": "maybe"
+    },
+    {
+      "qid": "15112004",
+      "question": "Are WHO/UNAIDS/UNICEF-recommended replacement milks for infants of HIV-infected mothers appropriate in the South African context?",
+      "gold": "no",
+      "kag": "maybe",
+      "baseline": null
+    },
+    {
+      "qid": "11555508",
+      "question": "Do inhaled corticosteroids affect perception of dyspnea during bronchoconstriction in asthma?",
+      "gold": "yes",
+      "kag": "no",
+      "baseline": "yes"
+    },
+    {
+      "qid": "22656647",
+      "question": "Are acceptance rates of a national preventive home visit programme for older people socially imbalanced?",
+      "gold": "yes",
+      "kag": "no",
+      "baseline": "yes"
+    }
+  ]
+}
