@@ -250,12 +250,19 @@ The suite never touches Ollama, Qdrant, or the network: `tests/conftest.py` prov
 - `test_chunking.py` — window size, overlap, edge cases (empty text, invalid sizes).
 - `test_retrieval.py` — cosine similarity, Top-K ranking, save/load round-trip.
 - `test_pipeline.py` — full build_index → ask loop, prompt construction, error handling.
+- `test_ingest.py` — added against the RAG-Anything gap review (see
+  [`../missing_to_complite.md`](../missing_to_complite.md)): `load_from_directory` now also reads
+  `.docx`, `.pptx`, and `.xlsx` files (pure-Python parsers — `python-docx`/`python-pptx`/
+  `openpyxl`, deliberately not a LibreOffice dependency), verified against three real committed
+  Office sample files (`data/sample_docs/remote_work_policy.docx`, `q3_product_update.pptx`,
+  `support_ticket_volume.xlsx`) alongside synthetic `tmp_path` fixtures for edge cases. No test file
+  covered `src/ingest.py` at all before this addition.
 
 ---
 
 ## Mini Project
 
-Build a local PDF question-answering assistant:
+Build a local PDF question-answering assistant (or a Word/PowerPoint/Excel one — `load_from_directory` now reads `.docx`, `.pptx`, and `.xlsx` too, not just `.pdf`/`.txt`/`.md`):
 
 ```bash
 mkdir -p data/my_pdfs && cp ~/some-document.pdf data/my_pdfs/
@@ -285,7 +292,16 @@ print(answer.answer)
 
 ## What I Learned
 
-*(fill in as you work through this level)*
+- **A one-file-format-per-branch `if/elif` ladder scales cleanly to new formats, right up until it
+  doesn't.** Adding `.docx`/`.pptx`/`.xlsx` to `load_from_directory` was a clean three-line
+  addition to the existing suffix dispatch — but each new format needed its own private `_read_*`
+  helper with real domain knowledge (python-docx's tables are separate from its paragraphs;
+  python-pptx's speaker notes needed an explicit decision to exclude; openpyxl needs
+  `data_only=True` or a formula cell yields its formula text, not its displayed value). The
+  dispatch is trivial; the format-specific correctness is where the real work is.
+- **No test file existed for `ingest.py` at all, for any format, before this pass** — including
+  the original PDF/text/markdown support. Adding a new format was the forcing function that
+  finally gave this module its first tests, not something planned ahead of time.
 
 ---
 
@@ -299,7 +315,7 @@ print(answer.answer)
 - [x] Evaluation harness (`src/build_eval_set.py`, `src/cli.py evaluate`)
 - [ ] Run everything yourself: `uv sync`, pull the Ollama models, run the examples
 - [ ] Build the mini project against your own PDFs
-- [ ] Fill in **What I Learned** above
+- [x] Fill in **What I Learned** above
 - [ ] Commit results
 
 ---

@@ -89,7 +89,7 @@ for **every single question** and `retrieval` for **none of them**. See
 |---|---|---|---|---|
 | Extraction | Unconstrained LLM entity/relation extraction | **Schema-constrained** (fixed entity/relation types) — real measured relation-rejection rate 17-36% across sample sizes, 0% entity-type rejection | Unconstrained, then clustered | Unconstrained, dual-indexed |
 | Structure | Flat graph, fact lookup | Graph + **mutual index** to source chunks (51 nodes / 37 edges from 25 abstracts, only 16/25 abstracts contributing at least one accepted entity) | Graph + **community detection** (Leiden) + hierarchical summaries | Graph + **dual-level** (entity + topic) retrieval keys |
-| Query handling | Direct fact lookup | **Logical-form parser** routing to 4 operator types — measured to systematically under-select `retrieval` (0/25 questions) in favor of `kg_reasoning` (25/25), a real, load-bearing routing bias, not a hypothetical one | Community-level summary retrieval, tuned for *global* sensemaking queries | Lightweight dual-level retrieval, no summarization layer |
+| Query handling | Direct fact lookup | **Logical-form parser** routing to 5 operator types (including, since the RAG-Anything gap review, a `global` community-summary operator — `indexing/community_summary.py` + `reasoning-engine/global_op.py`) — measured to systematically under-select `retrieval` (0/25 questions) in favor of `kg_reasoning` (25/25), a real, load-bearing routing bias, not a hypothetical one | Community-level summary retrieval, tuned for *global* sensemaking queries — the same idea this level's own `global` operator now implements (greedy modularity communities, not Leiden — a disclosed simplification) | Lightweight dual-level retrieval, no summarization layer |
 | Numerical / temporal reasoning | None | Dedicated **calculation operator** — deterministic, no LLM call, correctly resolves threshold and max/min queries over real extracted `Population.size` values | None built in | None built in |
 | Best fit | Specific-fact questions on a small corpus | Specific-fact questions needing logic/arithmetic, professional domains — **provided the router doesn't starve the answer step of evidence** (see Evaluation) | "What are the themes in this corpus?"-style global questions | Cost-conscious middle ground between the two |
 
@@ -135,11 +135,11 @@ flowchart TD
 
     KC --> KC1["config.py · dataset.py · embed.py<br/>llm.py · answer_parsing.py"]
     SCHEMA --> S1["domain_schema.py · constrained_extraction.py"]
-    IDX --> I1["mutual_index.py · graph_builder.py"]
-    REASON --> R1["logical_form_parser.py · operator_router.py<br/>retrieval_op.py · kg_reasoning_op.py<br/>language_reasoning_op.py · numerical_op.py"]
+    IDX --> I1["mutual_index.py · graph_builder.py<br/>community_summary.py"]
+    REASON --> R1["logical_form_parser.py · operator_router.py<br/>retrieval_op.py · kg_reasoning_op.py<br/>language_reasoning_op.py · numerical_op.py · global_op.py"]
     EV --> EV1["metrics.py · simple_graphrag_baseline.py<br/>kag_vs_graphrag_eval.py · comparison_results.json"]
     EX --> EX1["kag_pipeline.py"]
-    TE --> TE1["74 offline tests"]
+    TE --> TE1["84 offline tests"]
     NB --> N1["4 notebooks, executed"]
 ```
 
@@ -267,6 +267,46 @@ instead of a guess.
 
 ---
 
+## A fifth operator from the RAG-Anything gap review: `global`
+
+A later pass reviewing [HKUDS/RAG-Anything](https://github.com/HKUDS/RAG-Anything) (see
+[`../missing_to_complite.md`](../missing_to_complite.md)) closed a gap this level's own comparison
+table had disclosed from the start: no community-level "what are the overall themes here"
+query path, the same thing Microsoft GraphRAG's community detection and RAG-Anything/LightRAG's
+own `global` query mode both do.
+
+`indexing/community_summary.py` runs real community detection (`networkx`'s greedy modularity
+maximization over the graph's undirected projection — Leiden was not reimplemented, a disclosed
+simplification) and generates one real LLM summary per detected community.
+`reasoning-engine/global_op.py` embeds a question and every community summary and returns the most
+relevant ones, the same brute-force cosine approach every other retrieval in this repo uses.
+`logical_form_parser.py` gained a fifth operator (`global`) and `operator_router.py` wires it in as
+an optional `community_summaries` argument to `answer_question`.
+
+**A real structural finding, checked before building any of this**: this level's actual graph is
+not one disconnected component per source document. `nx.connected_components` on the real cached
+25-document graph found 18 components, but the largest holds 16 nodes — real cross-document entity
+reuse (the same schema-constrained entity name recurring across different PubMed abstracts), not an
+artifact of "one document, one component." Community detection has genuine cross-document
+structure to work with here, not a trivial per-document partition in disguise.
+
+**Real output, against the actual cached graph** (25 real PubMedQA abstracts): 11 real communities
+detected (sizes 2-9 nodes), each with a real, genuinely on-topic LLM-generated summary — e.g.
+community-2 correctly identified as "a clinical study investigating the use of immunosuppressive
+interventions (Cyclosporine, Chloroquine, and Hydroxychloroquine) in preventing or treating
+Graft-Versus-Host Disease," and community-6 correctly identified as concerning hip-fracture
+orthopedic research — generated from nothing but the community's own extracted entities and
+relations, not a template filled in from node counts. A real global-style question ("What are the
+main clinical research themes represented in this corpus?") correctly retrieved the most
+topically-relevant summaries via real embedding similarity.
+
+9 new offline tests cover community detection (finds real clusters, drops singletons, empty-graph
+edge case), summary generation (one real LLM call per community, prompt contains the community's
+own facts), the retrieval operator (most-similar-first, respects `top_k`, no-communities edge
+case), and the router's dispatch to this operator.
+
+---
+
 ## Common Failure Modes (confirmed by the real evaluation above)
 
 - **A fixed schema is a real constraint, with a real, measured cost** — but a smaller one than
@@ -307,7 +347,7 @@ instead of a guess.
 
 ## Tests
 
-74 offline tests (`tests/`), same fake-LLM/fake-embedder pattern as every prior level: the schema
+84 offline tests (`tests/`), same fake-LLM/fake-embedder pattern as every prior level: the schema
 validator rejecting an out-of-schema entity type and a backwards relation direction, constrained
 extraction handling malformed/unparseable LLM JSON without crashing, the mutual index round-tripping
 through `to_dict`/`from_dict` and `save_graph`/`load_graph`, the logical-form parser falling open
@@ -322,7 +362,8 @@ its Pydantic model would reject the same shape outright — real, measured evide
 unconstrained extraction is not just less structured, it is also more brittle to parse safely).
 
 461 tests passed across the full repo at the time this level was built (up from 387 after Level 8);
-474 now that Level 8's own mini project (`strategy_selector.py`) was added in a later pass.
+523 now, after Level 8's own mini project, the `global` operator above, and the other additions
+from the RAG-Anything gap review (`../missing_to_complite.md`) across Levels 1, 3, 7, and 9.
 
 ---
 
@@ -347,6 +388,12 @@ unconstrained extraction is not just less structured, it is also more brittle to
   theory why" would have been weaker and less trustworthy than reporting "KAG lost, here's the
   theory, and here's the same 25 questions re-answered with the one suspected variable changed,
   and the gap nearly closes."
+- **Checking the graph's actual structure before building on top of it caught a wrong assumption
+  early.** Before writing `community_summary.py`, the working assumption was "25 independent
+  documents means the graph is basically 25 disconnected islands, community detection won't find
+  anything interesting." `nx.connected_components` said otherwise (a real 16-node component) in
+  about one line of code, before any of the real module got written — cheaper than discovering the
+  same thing after building a community-detection feature around a wrong mental model of the data.
 
 ---
 
@@ -354,11 +401,12 @@ unconstrained extraction is not just less structured, it is also more brittle to
 
 - [x] Define the fixed domain schema and a constrained extraction prompt
 - [x] Implement mutual indexing between KG nodes and source chunks
-- [x] Implement the logical-form parser and the 4-operator hybrid reasoning engine
+- [x] Implement the logical-form parser and the hybrid reasoning engine (5 operators as of the RAG-Anything gap review, up from 4)
 - [x] Implement the numerical/temporal calculation operator (the one real capability Levels 3/5/6 never had)
+- [x] Implement the `global` community-level operator (`indexing/community_summary.py`, `reasoning-engine/global_op.py`) — closes the gap this level's own comparison table always disclosed against Microsoft GraphRAG/LightRAG
 - [x] Work through and execute all 4 notebooks
 - [x] Run the direct KAG-style-graph vs. simple-graph-rag comparison on real PubMedQA questions
-- [x] Offline test suite (74 tests)
+- [x] Offline test suite (84 tests)
 - [x] Build the mini project (`examples/kag_pipeline.py`, the two operator-combining example questions)
 - [x] Update **What I Learned** above
 - [x] Commit results

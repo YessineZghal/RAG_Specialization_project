@@ -19,6 +19,7 @@
 | 3 | [`07-production-rag/`](./07-production-rag/README.md) | extend existing level | 3 additions | ✅ done |
 | 4 | [`08-reasoning-strategies/`](./08-reasoning-strategies/README.md) | new level, full build | 1 level | ✅ done |
 | 5 | [`09-knowledge-augmented-generation/`](./09-knowledge-augmented-generation/README.md) | new level, full build | 1 level | ✅ done |
+| 6 | Levels 1, 3, 7, 9 (`../missing_to_complite.md`) | extend existing levels | 8 additions | ✅ done |
 
 As each task below is actually done (built, executed, tested — see [Definition of Done](#definition-of-done)), check its box and flip this table's row to 🟨 in progress / ✅ done.
 
@@ -204,6 +205,41 @@ rather than generic noise), Checklist updated, offline test suite at 74 for this
 the full repo at the time, 474 now that Level 8's mini project was added in a later pass), root
 `README.md`'s status line and roadmap table updated to mark
 Level 9 done.
+
+---
+
+## 6. RAG-Anything gap review (Levels 1, 3, 7, 9 additions)
+
+Source: [`../missing_to_complite.md`](./missing_to_complite.md) — a direct request to review
+[HKUDS/RAG-Anything](https://github.com/HKUDS/RAG-Anything) and build every closeable gap it found
+against this repo, in the same spirit as `GAP_ANALYSIS.md`/`RAG_TAXONOMY_COVERAGE.md`'s own findings.
+
+- [x] **Level 3 — three multimodal additions**: `equation_retrieval.py` (verified against the real
+  PDF's 3 real equations, 7 false positives correctly rejected), `table_statistics.py` (real
+  min/max/mean over the actual paper's BLEU/F1 scores), `query_time_vision.py` (question-specific
+  visual re-analysis at query time, same disclosed vision-model environment limitation as
+  `vision_embedding.py`). 23 new tests.
+- [x] **Level 1 — Office-format ingestion**: `.docx`/`.pptx`/`.xlsx` support in `src/ingest.py`
+  (pure-Python parsers, no LibreOffice dependency), verified against 3 real committed Office sample
+  files. 6 new tests — the first tests `ingest.py` had at all, for any format.
+- [x] **Level 7 — two operational additions**: `POST /admin/ingest/batch` and `POST /admin/reindex`,
+  both verified live against the real running Docker stack (real Qdrant collection point counts
+  checked before/after). Surfaced a real, disclosed finding: the in-memory corpus and Qdrant's own
+  point count can drift after a restart if anything was ever written directly into Qdrant outside a
+  fresh dataset load. 10 new tests.
+- [x] **Level 9 — a fifth operator, `global`**: `indexing/community_summary.py` (real `networkx`
+  community detection + real LLM summaries) and `reasoning-engine/global_op.py` (embedding-similarity
+  retrieval over those summaries), closing the community-level query gap this level's own comparison
+  table always disclosed against Microsoft GraphRAG. Verified against the real cached KAG graph: 11
+  real communities detected, each with a genuinely on-topic real summary. 10 new tests.
+- [ ] **Not built, as `missing_to_complite.md` itself recommended against**: a full cross-modal
+  knowledge graph (disproportionate scope) and audio/video ingestion (heavier than this repo's
+  laptop philosophy supports) — both left as real, disclosed gaps, not attempted.
+
+**Done:** all four levels' READMEs updated with real measured output (not just "implemented");
+`missing_to_complite.md` itself updated to mark each closed item with a link to where it landed;
+49 new offline tests across the four levels, full repository suite **523 tests passing** (474
+right before this pass).
 
 ---
 

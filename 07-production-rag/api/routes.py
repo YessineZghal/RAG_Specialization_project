@@ -13,12 +13,25 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "retrieval-infrastructure"))
 from observability.telemetry import CACHE_HITS, CACHE_MISSES, GENERATION_LATENCY, REQUEST_COUNT, REQUEST_LATENCY, RETRIEVAL_LATENCY
+from reindex import reindex_corpus
 from security.auth import AuthError, verify_admin_key, verify_api_key
 from security.permissions import PermissionDeniedError, require_permission
 from security.prompt_injection import is_suspicious
 
-from .schemas import HealthResponse, IngestRequest, IngestResponse, QueryRequest, QueryResponse, Source
+from .schemas import (
+    BatchIngestRequest,
+    BatchIngestResponse,
+    HealthResponse,
+    IngestRequest,
+    IngestResponse,
+    QueryRequest,
+    QueryResponse,
+    ReindexRequest,
+    ReindexResponse,
+    Source,
+)
 
 router = APIRouter()
 
@@ -230,4 +243,81 @@ def ingest(payload: IngestRequest, request: Request, role: str = Depends(require
         doc_id=payload.doc_id,
         status="updated" if is_update else "created",
         corpus_size=len(state.corpus),
+    )
+
+
+@router.post("/admin/ingest/batch", response_model=BatchIngestResponse)
+def ingest_batch(payload: BatchIngestRequest, request: Request, role: str = Depends(require_admin)) -> BatchIngestResponse:
+    """Add or update many documents in one call -- each item is already-
+    extracted text with no parsing step, the same "direct content list
+    insertion" flexibility named in `../../missing_to_complite.md`. One
+    batched `embed_many()` call and one batched `upsert()` call, not N
+    individual round trips -- the real reason this exists alongside
+    `/admin/ingest` rather than just looping a client-side call to it.
+    """
+    state = request.app.state
+    doc_ids = [doc.doc_id for doc in payload.documents]
+    is_update = [doc_id in state.corpus for doc_id in doc_ids]
+
+    vectors = state.embedder.embed_many([doc.text for doc in payload.documents])
+    payloads = [{"title": doc.title, "text": doc.text} for doc in payload.documents]
+    state.qdrant.upsert(doc_ids, vectors, payloads)
+    for doc_id, doc, was_update in zip(doc_ids, payload.documents, is_update, strict=True):
+        state.corpus[doc_id] = {"title": doc.title, "text": doc.text}
+
+    results = [
+        IngestResponse(doc_id=doc_id, status="updated" if was_update else "created", corpus_size=len(state.corpus))
+        for doc_id, was_update in zip(doc_ids, is_update, strict=True)
+    ]
+    return BatchIngestResponse(
+        results=results,
+        n_created=sum(1 for was_update in is_update if not was_update),
+        n_updated=sum(1 for was_update in is_update if was_update),
+        corpus_size=len(state.corpus),
+    )
+
+
+@router.post("/admin/reindex", response_model=ReindexResponse)
+def reindex(payload: ReindexRequest, request: Request, role: str = Depends(require_admin)) -> ReindexResponse:
+    """Rebuild the vector index from the current live corpus under a
+    brand-new collection name -- optionally with a different embedding
+    model -- without ever writing to the collection currently serving
+    `/query` traffic. See `retrieval-infrastructure/reindex.py` for why:
+    this level's own Success Criteria disclosed "deploy a new embedding
+    model without corrupting the index" as unexercised; this route is
+    that exercise. Only swaps the live app over to the new
+    collection/embedder if `activate=True` *and* reindexing succeeded --
+    a failed reindex leaves the currently-serving index completely
+    untouched.
+    """
+    state = request.app.state
+
+    # Construct via `type(state.embedder)`, not a hardcoded `OllamaEmbedder` --
+    # keeps this route testable with a fake embedder offline, and correct in
+    # production where `state.embedder` really is `OllamaEmbedder`. Reuses the
+    # existing instance untouched when no different model was requested.
+    if payload.embed_model and payload.embed_model != state.embedder.model:
+        reindex_embedder = type(state.embedder)(model=payload.embed_model)
+    else:
+        reindex_embedder = state.embedder
+    embed_model = reindex_embedder.model
+
+    # Same `type(...)` construction trick for the store: a brand-new
+    # collection under the *same* backend class as whatever is currently
+    # live (`QdrantStore` in production, a fake in tests) -- never the
+    # collection currently serving `/query` traffic.
+    new_store = type(state.qdrant)(collection=payload.new_collection_name)
+    documents_written = reindex_corpus(state.corpus, reindex_embedder, new_store)
+
+    activated = False
+    if payload.activate:
+        state.qdrant = new_store
+        state.embedder = reindex_embedder
+        activated = True
+
+    return ReindexResponse(
+        new_collection_name=payload.new_collection_name,
+        embed_model=embed_model,
+        documents_written=documents_written,
+        activated=activated,
     )

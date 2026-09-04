@@ -43,3 +43,40 @@ class IngestResponse(BaseModel):
     doc_id: str
     status: str  # "created" | "updated"
     corpus_size: int
+
+
+class BatchIngestRequest(BaseModel):
+    """A list of already-extracted documents, indexed directly with no
+    parsing step of any kind -- the same "direct content list insertion"
+    flexibility RAG-Anything's ingestion API offers (see
+    `../../missing_to_complite.md`), and the natural batched counterpart
+    to `IngestRequest`'s one-document-per-call shape."""
+
+    documents: list[IngestRequest] = Field(..., min_length=1, max_length=200)
+
+
+class BatchIngestResponse(BaseModel):
+    results: list[IngestResponse]
+    n_created: int
+    n_updated: int
+    corpus_size: int
+
+
+class ReindexRequest(BaseModel):
+    """Rebuild the vector index from the current in-memory corpus under a
+    brand-new collection name, optionally with a different embedding
+    model -- the "deploy a new embedding model without corrupting the
+    index" gap this level's own Success Criteria disclosed as
+    unexercised. The currently-serving collection is never touched until
+    `activate=True` explicitly swaps to the new one."""
+
+    new_collection_name: str = Field(..., min_length=1)
+    embed_model: str | None = Field(default=None, description="Defaults to the currently configured embedding model if omitted.")
+    activate: bool = Field(default=False, description="If true, atomically point the live app at the new collection/embedder once reindexing succeeds.")
+
+
+class ReindexResponse(BaseModel):
+    new_collection_name: str
+    embed_model: str
+    documents_written: int
+    activated: bool

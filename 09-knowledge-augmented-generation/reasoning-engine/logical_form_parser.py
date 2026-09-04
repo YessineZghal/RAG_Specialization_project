@@ -1,6 +1,15 @@
 """Parse a natural-language question into a logical form: which of the
-four hybrid-reasoning operators it needs, plus any structured hints those
+hybrid-reasoning operators it needs, plus any structured hints those
 operators require.
+
+Five operators as of the RAG-Anything gap review (see
+`../../missing_to_complite.md`): the original four (retrieval,
+kg_reasoning, language_reasoning, numerical_calculation), plus `global` --
+a community-level operator answering the "what are the overall themes in
+this corpus" style of question this level's own README always disclosed
+as unbuilt (`indexing/community_summary.py`, `global_op.py`), the same
+gap Microsoft GraphRAG and RAG-Anything/LightRAG's own `global` query
+mode both name independently.
 
 This is the level's other real classification decision (the first is
 `operator_router`'s dispatch itself) -- and, per Level 4's query
@@ -25,7 +34,7 @@ from pydantic import BaseModel, ValidationError
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from kag_common.llm import OllamaLLM
 
-ALL_OPERATORS = ("retrieval", "kg_reasoning", "language_reasoning", "numerical_calculation")
+ALL_OPERATORS = ("retrieval", "kg_reasoning", "language_reasoning", "numerical_calculation", "global")
 
 PARSE_PROMPT = """Read the question and decide which reasoning operators are needed to answer it. Available operators:
 
@@ -33,6 +42,7 @@ PARSE_PROMPT = """Read the question and decide which reasoning operators are nee
 - kg_reasoning: follow structured relations in a knowledge graph (e.g. which intervention a study used, which outcome it reported)
 - language_reasoning: read text and judge/summarize in natural language (needed for almost every question that ends in a yes/no/maybe verdict)
 - numerical_calculation: compare a number in the text/graph against a threshold (e.g. "larger than 500 patients")
+- global: the question asks about an overall theme or pattern spanning many documents (e.g. "what are the main research directions in this corpus?"), not one specific fact
 
 Also extract:
 - focus_hint: the key entity/condition/study the question is about, as a short phrase, or null

@@ -20,6 +20,12 @@ dependencies = [
     # Level 1 — data + ingestion
     "datasets>=2.20",
     "pypdf>=4.2",
+    # Office-format ingestion (see missing_to_complite.md's RAG-Anything
+    # gap review) -- pure-Python parsers, deliberately not a LibreOffice
+    # dependency, so this stays runnable with `uv sync` alone.
+    "python-docx>=1.1",
+    "python-pptx>=1.0",
+    "openpyxl>=3.1",
     # Level 1 — local, open-source model serving
     "ollama>=0.3",
     "rank-bm25>=0.2.2",

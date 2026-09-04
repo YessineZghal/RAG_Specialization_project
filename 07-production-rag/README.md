@@ -123,7 +123,7 @@ flowchart TD
     PC --> PC1["config.py · dataset.py · embed.py · llm.py"]
     API --> A1["main.py · routes.py · schemas.py"]
     INF --> I1["ollama_client.py · vllm_client.py · litellm_config.yaml"]
-    RI --> RI1["qdrant.py · postgres.py · redis_store.py"]
+    RI --> RI1["qdrant.py · postgres.py · redis_store.py · reindex.py"]
     OBS --> O1["telemetry.py · prometheus.yml · grafana/"]
     PE --> PE1["ragas_eval.py · retrieval_eval.py · regression_suite.py"]
     SEC --> S1["auth.py · permissions.py · document_acl.py<br/>prompt_injection.py · personalization.py"]
@@ -228,6 +228,17 @@ curl -X POST http://127.0.0.1:8001/query \
 curl -X POST http://127.0.0.1:8001/admin/ingest \
   -H "x-admin-api-key: dev-admin-key" -H "Content-Type: application/json" \
   -d '{"doc_id": "my-doc-1", "title": "My Document", "text": "..."}'
+
+# add many documents in one call, no parsing step (see "RAG-Anything gap review" below)
+curl -X POST http://127.0.0.1:8001/admin/ingest/batch \
+  -H "x-admin-api-key: dev-admin-key" -H "Content-Type: application/json" \
+  -d '{"documents": [{"doc_id": "d1", "title": "...", "text": "..."}, {"doc_id": "d2", "title": "...", "text": "..."}]}'
+
+# rebuild the index under a new collection (optionally a new embedding model), without
+# touching the collection currently serving traffic
+curl -X POST http://127.0.0.1:8001/admin/reindex \
+  -H "x-admin-api-key: dev-admin-key" -H "Content-Type: application/json" \
+  -d '{"new_collection_name": "production_rag_v2", "embed_model": "nomic-embed-text", "activate": false}'
 ```
 
 `examples/production_app/client.py` **is** the worked example for this level — unlike every
@@ -351,6 +362,78 @@ POST /query  {"question": "Where can you find quokkas and why are they called
 
 The document did not exist when the API process started; it was findable, correctly cited, and
 correctly answered from within seconds of being ingested, with the process never restarting.
+
+---
+
+## Two additions from the RAG-Anything gap review
+
+A later pass reviewing [HKUDS/RAG-Anything](https://github.com/HKUDS/RAG-Anything) (see
+[`../missing_to_complite.md`](../missing_to_complite.md)) found two real, closeable operational
+gaps this level had already disclosed in its own Success Criteria but never closed.
+
+### 1. Batch ingestion — `POST /admin/ingest/batch`
+
+`/admin/ingest` only ever took one document per call. RAG-Anything's "direct content list
+insertion" — indexing a list of already-extracted documents in one call, no parsing step — is now
+`/admin/ingest/batch`: one batched `embedder.embed_many()` call and one batched
+`qdrant.upsert()` call for the whole list, not N individual round trips. Verified live against the
+real running stack:
+
+```
+POST /admin/ingest/batch  {"documents": [
+    {"doc_id": "batch-test-1", "title": "...", "text": "..."},
+    {"doc_id": "batch-test-2", "title": "...", "text": "..."}
+]}
+  -> {"n_created": 2, "n_updated": 0, "corpus_size": 302}
+```
+
+**A real, harmless inconsistency this surfaced**: `/health`'s `qdrant_docs` (Qdrant's own live
+point count) and this endpoint's `corpus_size` (the API process's in-memory `state.corpus` dict
+length) can genuinely disagree after a process restart, if anything was ever written directly into
+Qdrant outside of a fresh `production_common.dataset.prepare()` load — exactly what happened here,
+from an earlier ad-hoc test document inserted straight into Qdrant in a previous session. Restarting
+the API reloads `state.corpus` from the original dataset, which has no way to know about a document
+that only ever reached Qdrant directly. Not a bug in the new endpoint — a real, disclosed reminder
+that "the in-memory corpus" and "what Qdrant actually holds" are two different sources of truth
+that can drift, and a production system would need a real reconciliation path, not just an
+assumption that they match.
+
+### 2. Reindexing — `POST /admin/reindex`
+
+This level's own Success Criteria already stated plainly: *"How do you deploy a new embedding
+model without corrupting the index? Not exercised in this level."* `retrieval-infrastructure/reindex.py`
+closes that: build a brand-new collection under its own name, embed the *entire* current corpus
+into it (optionally with a different model), and only swap the live app over to it if
+`activate=True` **and** the rebuild actually succeeded. A failed or partial reindex never touches
+the collection currently serving `/query` traffic, because it's a different collection entirely
+until that explicit swap.
+
+Verified live, real Qdrant collections, not simulated:
+
+```
+POST /admin/reindex  {"new_collection_name": "production_rag_v2_test", "activate": false}
+  -> {"documents_written": 302, "activated": false}
+
+  Original collection ("production_rag") point count: 303 (unchanged)
+  New collection ("production_rag_v2_test") point count: 302 (confirmed via Qdrant directly)
+
+POST /admin/reindex  {"new_collection_name": "production_rag_v3_activated", "activate": true}
+  -> {"activated": true}
+
+  GET /health  -> qdrant_docs now reports the NEW collection's count (302), confirming the
+                  live app really swapped over
+  POST /query  -> answered correctly against the newly-activated collection, real citations
+                  returned, no restart needed
+```
+
+Both throwaway test collections were deleted after verification; the live app was restarted once
+more to reconnect to the original `production_rag` collection, confirmed back at its prior count.
+
+13 new offline tests cover `reindex_corpus`'s pure logic (embeds/writes correctly, is a no-op on
+an empty corpus, never touches anything but the store it's given) and both routes' actual handler
+logic, called directly with a fake `app.state` rather than through a live server — the same
+offline-first philosophy every other module in this level uses, extended one level up to the route
+handlers themselves for the first time.
 
 ---
 
@@ -506,26 +589,44 @@ means for the Kubernetes HPA config: [`load-testing/scenarios.md`](load-testing/
 uv run pytest 07-production-rag/tests -v   # or `uv run pytest -q` from the repo root for all 7 levels
 ```
 
-66 tests (48 before the taxonomy-review additions), entirely offline (fake LLM/embedder/Redis
-fixtures via `tests/conftest.py`'s `fake_llm`/`fake_embedder`/`fake_redis`, no network, Ollama,
-Qdrant, Postgres, or Redis required) — covering auth (including the new separate admin key),
-permissions (including a regression test pinning that `PermissionDeniedError` never accidentally
-re-shadows Python's builtin `PermissionError`, a near-miss caught before it shipped), document
-ACLs, personalization, prompt-injection detection (including the real regex bug above, found by
-running this exact suite), both cache tiers (including their new per-user namespace), the Qdrant
-`_point_id` fix, retrieval metrics, the regression suite, the hand-rolled Ragas metrics (including
-the real `_extract_claims` JSON-crash fix), and both inference backends. `docker/api.Dockerfile`
-and `docker/worker.Dockerfile` are both genuinely built *and run* (see Setup) — not just written
-and assumed to work.
+76 tests (66 after the taxonomy-review additions, 48 before them), entirely offline (fake
+LLM/embedder/Redis fixtures via `tests/conftest.py`'s `fake_llm`/`fake_embedder`/`fake_redis`, no
+network, Ollama, Qdrant, Postgres, or Redis required) — covering auth (including the new separate
+admin key), permissions (including a regression test pinning that `PermissionDeniedError` never
+accidentally re-shadows Python's builtin `PermissionError`, a near-miss caught before it shipped),
+document ACLs, personalization, prompt-injection detection (including the real regex bug above,
+found by running this exact suite), both cache tiers (including their new per-user namespace), the
+Qdrant `_point_id` fix, retrieval metrics, the regression suite, the hand-rolled Ragas metrics
+(including the real `_extract_claims` JSON-crash fix), both inference backends, `reindex_corpus`'s
+pure logic, and both new routes' actual handler logic called directly with a fake `app.state`.
+`docker/api.Dockerfile` and `docker/worker.Dockerfile` are both genuinely built *and run* (see
+Setup) — not just written and assumed to work.
 
-Full repo: **328 tests passing** across all 7 levels together (310 before this batch of work —
-nothing elsewhere broke).
+Full repo: **484 tests passing** across the whole repo (328 right after this level's taxonomy-review
+additions, back when the repo had 7 levels total).
 
 ---
 
 ## What I Learned
 
-*(fill in after working through this level yourself)*
+- **"The corpus" is not one thing — it's at least two, and they can drift.** The in-memory
+  `state.corpus` dict and Qdrant's own live point count look like they describe the same data, but
+  they're populated by two different code paths (a fresh dataset load at startup vs. whatever's
+  ever been written directly into Qdrant), and a restart can desynchronize them silently. Building
+  batch ingestion is what surfaced this — the mismatch was real and already present, not introduced
+  by the new endpoint, just finally visible because something finally compared the two numbers.
+- **A "does it corrupt the index" question is only actually answered once something writes to a
+  second collection and reads it back.** Reasoning about `ensure_collection`'s create-if-missing
+  behavior explained *why* a live re-embed would be risky; it took actually building
+  `/admin/reindex`, running it against the real stack twice (once each way), and directly querying
+  Qdrant's own collection endpoints before and after to turn "probably risky" into "confirmed
+  safe, here's the before/after point counts that prove it."
+- **Constructing a dependency via `type(existing_instance)(...)` instead of importing the concrete
+  class is what made two new routes testable offline at all.** The first version of
+  `/admin/reindex` hardcoded `OllamaEmbedder(...)` and a real `QdrantStore(...)` directly inside the
+  route — which would have made every test either skip real assertions or require a live Ollama
+  and Qdrant. Generic construction from whatever's already on `app.state` fixed both at once, and
+  is a pattern worth reaching for by default, not just when a test forces the question.
 
 ---
 
@@ -543,8 +644,9 @@ nothing elsewhere broke).
 - [x] Work through and execute all 4 notebooks
 - [x] Build the mini project (`examples/production_app/client.py` — a real HTTP client)
 - [x] Build the real-metrics dashboard artifact
-- [x] Offline test suite (48 tests before the taxonomy-review additions; see below)
-- [ ] Update **What I Learned** above
+- [x] Offline test suite (76 tests; see below)
+- [x] Two additions from the RAG-Anything gap review (`/admin/ingest/batch`, `/admin/reindex`) — both verified live against the real running stack
+- [x] Update **What I Learned** above
 - [ ] Commit results
 
 **Three additions from a later taxonomy review** (see [`../RAG_TAXONOMY_COVERAGE.md`](../RAG_TAXONOMY_COVERAGE.md)) — all implemented and verified against the live stack; see [Three additions from the taxonomy review](#three-additions-from-the-taxonomy-review) for the full walkthrough:
@@ -571,9 +673,13 @@ You should be able to answer:
 - **How are private documents protected?** A pre-filter ACL at the vector-DB level
   (`security/document_acl.py` + Qdrant's native `Filter`), never a post-hoc check on already-returned
   results.
-- **How do you deploy a new embedding model without corrupting the index?** Not exercised in this
-  level — `qdrant.py`'s `ensure_collection` only creates a collection if one doesn't already exist;
-  a real re-embedding migration would need a new collection + cutover, not implemented here.
+- **How do you deploy a new embedding model without corrupting the index?**
+  `POST /admin/reindex` — build a brand-new collection under its own name, embed the whole corpus
+  into it, and only swap the live app over if the rebuild succeeds and `activate=True`. Verified
+  live against the real stack: a reindex with `activate=False` left the original collection's point
+  count completely unchanged; a second one with `activate=True` swapped `/health`'s reported count
+  over to the new collection, and `/query` kept answering correctly afterward. See
+  [Two additions from the RAG-Anything gap review](#two-additions-from-the-rag-anything-gap-review).
 - **How do you detect quality regressions?** `production_eval/regression_suite.py` — and this
   level's own run of it is the proof it actually flags something, including a result worth
   double-checking rather than trusting outright (see Evaluation).
@@ -583,6 +689,9 @@ You should be able to answer:
 - **Can new content be added without restarting the service?** Yes — `POST /admin/ingest`,
   verified live: a document about a topic absent at startup was correctly answerable within
   seconds of being added, no restart.
+- **Can many documents be added in one call, with no parsing step?** Yes —
+  `POST /admin/ingest/batch`, one batched embed call and one batched upsert call for the whole
+  list, verified live.
 - **What about an attacker planting malicious documents into the index ahead of time (corpus
   poisoning), rather than injecting at query time?** Not covered — `security/prompt_injection.py`
   only defends a live query or an already-retrieved passage, never the ingestion path itself. A

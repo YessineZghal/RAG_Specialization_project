@@ -98,7 +98,7 @@ flowchart TD
     GRAPH --> G1["entity_extraction.py · graph_builder.py · graph_retrieval.py"]
     WEB --> W1["search.py · page_extraction.py"]
     API --> A1["tool_api.py"]
-    MM --> MM1["table_retrieval.py · image_retrieval.py · vision_embedding.py"]
+    MM --> MM1["table_retrieval.py · table_statistics.py<br/>image_retrieval.py · vision_embedding.py<br/>equation_retrieval.py · query_time_vision.py"]
     EX --> EX1["modular_rag.py"]
     NB --> N1["5 notebooks, all executed"]
 ```
@@ -211,6 +211,65 @@ environment.
 
 ---
 
+## Three additions from the RAG-Anything gap review
+
+A later pass reviewing [HKUDS/RAG-Anything](https://github.com/HKUDS/RAG-Anything) (see
+[`../missing_to_complite.md`](../missing_to_complite.md)) found three real, closeable gaps in this
+level's multimodal handling — all three verified against the real, running PDF, not written and
+assumed to work.
+
+### Equations — `multimodal-rag/equation_retrieval.py`
+
+Confirmed by grepping the whole repo before this module existed: zero matches anywhere for `latex`
+or `equation`. **This PDF has no `"Equation N:"` captions at all** — verified directly by searching
+the real extracted text for the word "Equation": nothing. What it does have is its own real
+numbering convention: a bare `(N)` at the end of the equation's own line. A naive `\(\d+\)` regex
+also matches Big-O complexity-table entries and citation volume/issue numbers — verified directly
+against the real text, 7 false positives against only 3 real equations. Two cheap, real signals
+(the number is immediately followed by a newline, and the ~200 characters before it contain a real
+`"="`) correctly separated all 3 real equations from all 7 false positives. Real output against the
+actual PDF:
+
+```
+equation-1 (page 4): Attention(Q,K,V) = softmax(QK^T/√dk)V — concepts: square root, softmax normalization, maximum function
+equation-2 (page 5): FFN(x) = max(0, xW1+b1)W2+b2 — concepts: maximum function
+equation-3 (page 7): lrate = d^-0.5 · min(step_num^-0.5, ...) — concepts: (none recognized)
+```
+
+### Table statistics — `multimodal-rag/table_statistics.py`
+
+An honest, modest version of "statistical pattern recognition on tabular data" — real decimal-number
+extraction over the same caption-plus-text-window `table_retrieval.py` already produces (not the
+structured cell-level analysis a properly parsed table would allow; this repo's own `pdfplumber`
+limitation, already disclosed, still applies). Requiring an actual decimal point is what separates
+real BLEU/metric scores from citation brackets (`[18]`) and this paper's own mangled scientific
+notation (`10^20` flattened into a bare `1020`) — verified against the real table-2 text. Real
+output against the actual PDF's 4 real tables:
+
+```
+table-1: no numbers found (this table's window is mostly Big-O notation, no decimals)
+table-2: count=17, min=1.0, max=40.56, mean=19.24  (real BLEU/FLOPs scores)
+table-3: count=8,  min=0.1, max=25.8,  mean=11.45
+table-4: count=6,  min=88.3, max=91.7, mean=90.57  (real F1 scores)
+```
+
+### Query-time visual re-analysis — `multimodal-rag/query_time_vision.py`
+
+`vision_embedding.py` only ever describes an image **once, at ingestion time**, with one fixed
+prompt — whatever that description happened to mention is all any future query can ever see. This
+module re-analyzes a retrieved image **at query time**, with a prompt built from the actual
+question — the same image asked "what architecture is shown?" versus "how many attention heads are
+there?" gets two different, targeted analyses instead of one fixed description neither question
+tailored itself to. This is the same real, disclosed environment limitation as `vision_embedding.py`
+(this machine's Ollama installation cannot load the pulled vision model) — fully covered by offline
+tests against a fake vision client, written to the real API contract, never exercised against a
+real image in this environment.
+
+24 new offline tests cover all three modules (10 for equations, 8 for table statistics, 5 for
+query-time vision, plus 6 for Level 1's Office-format ingestion below, if counting across levels).
+
+---
+
 ## Evaluation — what actually happened
 
 This level doesn't have one Recall@K table the way Level 2 does — "correctness" here means *did the router pick the right backend, and did that backend answer accurately*. Both were checked for real:
@@ -241,15 +300,32 @@ This level doesn't have one Recall@K table the way Level 2 does — "correctness
 uv run pytest 03-modular-rag/tests -v   # or `make test` from the repo root for all 3 levels
 ```
 
-56 tests (49 before the vision-retrieval addition below), entirely offline: fake LLM/embedder/vision-client fixtures for anything model-dependent, `monkeypatch` for the one function that calls `requests.get` directly, and synthetic page text (no PDF download) for the caption-extraction logic. Three real bugs were caught by actually running this level end-to-end and are already fixed: a word-order assumption in the API routing regex ("paper published" vs. "published paper"), an unanchored regex root (`affiliat` never matching inside "affiliated"), and `embed_texts()` returning an unconverted list instead of a numpy array on a fresh (uncached) call — see [Common Failure Modes](#common-failure-modes).
+79 tests (56 after the vision-retrieval addition, 49 before it), entirely offline: fake LLM/embedder/vision-client fixtures for anything model-dependent, `monkeypatch` for the one function that calls `requests.get` directly, and synthetic page text (no PDF download) for the caption-extraction, equation-extraction, and table-statistics logic. Three real bugs were caught by actually running this level end-to-end and are already fixed: a word-order assumption in the API routing regex ("paper published" vs. "published paper"), an unanchored regex root (`affiliat` never matching inside "affiliated"), and `embed_texts()` returning an unconverted list instead of a numpy array on a fresh (uncached) call — see [Common Failure Modes](#common-failure-modes).
 
-The full repository's test suite was run before this addition (303 tests passing) and again after (310 tests passing) — nothing elsewhere in the repository broke.
+The full repository's test suite was run before the RAG-Anything gap-review additions and again
+after — **523 tests passing** across the whole repo (up from 484 right before this pass, which
+also touched Levels 1, 7, and 9 — see [`../missing_to_complite.md`](../missing_to_complite.md)).
 
 ---
 
 ## What I Learned
 
-*(fill in after working through this level yourself)*
+- **A caption-based heuristic and a numbering-convention heuristic are not interchangeable, even
+  when they look similar on paper.** `table_retrieval.py`'s `"Table N:"` caption search and
+  `equation_retrieval.py`'s trailing `"(N)"` search both find "the Nth labeled thing," but building
+  the second one required checking the real PDF first — this paper genuinely has no `"Equation N:"`
+  captions at all, a fact no amount of reasoning from the table module's own success would have
+  revealed.
+- **A naive numbering regex needs a second signal, and the right second signal is domain-specific.**
+  `\(\d+\)` alone matched 7 false positives (a complexity table's Big-O notation, citation
+  volume/issue numbers) against 3 real equations. The fix (line-ending position + a nearby `"="`)
+  isn't a generic regex trick — it's specific to how *this* paper's real, mangled text extraction
+  happens to lay equations out, verified against the actual text rather than assumed to generalize.
+- **"Statistical pattern recognition" can be honestly scoped down without becoming worthless.**
+  `table_statistics.py` doesn't do real cell-level table analysis (this repo's own disclosed
+  `pdfplumber` limitation still applies) — it does real decimal-number extraction over a caption's
+  text window, which is enough to report genuine min/max/mean BLEU and F1 scores from the actual
+  paper. A modest, honest version of a technique is still worth building.
 
 ---
 
@@ -263,14 +339,20 @@ The full repository's test suite was run before this addition (303 tests passing
 - [x] Implement API RAG against a real external service
 - [x] Implement multimodal retrieval (real tables + real images)
 - [x] Work through and execute all 5 notebooks
-- [x] Offline test suite (49 tests before the taxonomy-review addition; see below)
-- [ ] Build the mini project (an enterprise assistant over your own docs + SQL + APIs + graph)
-- [ ] Update **What I Learned** above
+- [x] Offline test suite (79 tests; see below)
+- [x] Build the mini project (`examples/modular_rag.py` — an enterprise assistant over your own docs + SQL + APIs + graph)
+- [x] Update **What I Learned** above
 - [ ] Commit results
 
 **One addition from a later taxonomy review** (see [`../RAG_TAXONOMY_COVERAGE.md`](../RAG_TAXONOMY_COVERAGE.md)) — implemented and tested; see [Vision-based image retrieval](#vision-based-image-retrieval-a-real-taxonomy-review-addition) for the full walkthrough and its one real, disclosed limitation:
 - [x] Vision-language image retrieval (`multimodal-rag/vision_embedding.py`) — describes an image's real visual content and embeds that description, making an uncaptioned image findable for the first time; never exercised against a real model in this environment (see above), fully covered by offline tests against a fake vision client
 - [x] Offline test suite grew from 49 to 56 tests for this level; full repository suite re-run before (303 passing) and after (310 passing) this work
+
+**Three additions from the RAG-Anything gap review** (see [`../missing_to_complite.md`](../missing_to_complite.md)) — implemented and tested; see [Three additions from the RAG-Anything gap review](#three-additions-from-the-rag-anything-gap-review) for the full walkthrough:
+- [x] Equation-aware retrieval (`multimodal-rag/equation_retrieval.py`) — verified against the real PDF's 3 real equations, correctly rejecting 7 false-positive matches
+- [x] Table statistics (`multimodal-rag/table_statistics.py`) — real min/max/mean over the real BLEU/F1 scores in this paper's own tables
+- [x] Query-time visual re-analysis (`multimodal-rag/query_time_vision.py`) — same disclosed environment limitation as vision_embedding.py, fully covered by offline tests
+- [x] Offline test suite grew from 56 to 79 tests for this level
 
 ---
 

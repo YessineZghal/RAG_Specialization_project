@@ -1,5 +1,5 @@
 """The hybrid reasoning engine's router: dispatch a parsed `LogicalForm`
-to whichever of the four operators it named, merge their evidence, and
+to whichever of the five operators it named, merge their evidence, and
 run the final language-reasoning synthesis -- the
 "Query -> Logical-form parser -> router -> {operators} -> Merge evidence
 -> Answer + citations" pipeline from this level's README architecture
@@ -16,6 +16,7 @@ import networkx as nx
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from global_op import answer_from_communities
 from kg_reasoning_op import reason_over_graph
 from language_reasoning_op import reason_in_language
 from logical_form_parser import LogicalForm, parse_logical_form
@@ -49,6 +50,7 @@ def answer_question(
     llm: OllamaLLM | None = None,
     logical_form: LogicalForm | None = None,
     top_k: int = 3,
+    community_summaries: dict[str, dict] | None = None,
 ) -> KagAnswer:
     llm = llm or OllamaLLM()
     embedder = embedder or OllamaEmbedder()
@@ -72,6 +74,11 @@ def answer_question(
     if "numerical_calculation" in logical_form.operators and logical_form.numeric_comparison:
         numeric_result = evaluate_numeric(graph, logical_form.focus_hint, logical_form.numeric_comparison)
         evidence_parts.append(f"Numeric calculation: {numeric_result.explanation}")
+
+    if "global" in logical_form.operators and community_summaries:
+        global_evidence = answer_from_communities(question, community_summaries, embedder)
+        if global_evidence.summaries:
+            evidence_parts.append("Community-level themes:\n" + "\n".join(global_evidence.summaries))
 
     evidence_text = "\n\n".join(evidence_parts)
     language_result = reason_in_language(question, evidence_text, llm)

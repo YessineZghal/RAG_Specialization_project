@@ -105,3 +105,39 @@ def test_answer_question_skips_parsing_when_a_logical_form_is_supplied(fake_llm,
 
     assert answer.verdict == "no"
     assert len(llm.calls) == 1  # no logical-form parse call was made
+
+
+def test_answer_question_dispatches_to_the_global_operator_when_summaries_are_given(fake_llm, fake_embedder):
+    graph, index = _build_graph_and_index()
+    corpus, doc_ids, matrix = _corpus_and_embeddings()
+    embedder = fake_embedder(vectors={
+        "What are the overall research themes here?": [1.0, 0.0],
+        "Diabetes-related intervention studies.": [1.0, 0.0],
+    })
+    community_summaries = {"community-0": {"nodes": ["study-1", "diabetes"], "summary": "Diabetes-related intervention studies."}}
+    llm = fake_llm(response="Answer: Yes")
+
+    form = LogicalForm(operators=("global", "language_reasoning"))
+    answer = answer_question(
+        "What are the overall research themes here?", corpus, doc_ids, matrix, graph, index,
+        embedder=embedder, llm=llm, logical_form=form, community_summaries=community_summaries,
+    )
+
+    assert "global" in answer.operators_used
+    assert "Community-level themes" in answer.evidence_text
+    assert "Diabetes-related intervention studies." in answer.evidence_text
+
+
+def test_answer_question_skips_the_global_operator_when_no_summaries_are_given(fake_llm, fake_embedder):
+    graph, index = _build_graph_and_index()
+    corpus, doc_ids, matrix = _corpus_and_embeddings()
+    embedder = fake_embedder()
+    llm = fake_llm(response="Answer: No")
+
+    form = LogicalForm(operators=("global", "language_reasoning"))
+    answer = answer_question(
+        "some question", corpus, doc_ids, matrix, graph, index,
+        embedder=embedder, llm=llm, logical_form=form, community_summaries=None,
+    )
+
+    assert "Community-level themes" not in answer.evidence_text
